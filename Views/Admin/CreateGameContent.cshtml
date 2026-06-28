@@ -1,0 +1,134 @@
+﻿@model MathUniverse.Models.GameContent
+@{
+    ViewData["Title"] = "Tạo cặp thẻ trò chơi";
+    var lesson = ViewBag.Lesson as MathUniverse.Models.Lesson;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm" style="background: rgba(42, 27, 61, 0.95); border: 1px solid #4e346e;">
+                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                    <h3 class="mb-0 text-white">
+                        <i class="fas fa-gamepad"></i> Tạo cặp thẻ trò chơi mới
+                    </h3>
+                    @if (lesson != null)
+                    {
+                        <small class="text-white">Bài học: @lesson.Title - Lớp @lesson.Grade</small>
+                    }
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateGameContent" method="post">
+                        <input type="hidden" asp-for="LessonId" />
+
+                        <div class="mb-4">
+                            <label asp-for="CardQuestion" class="form-label text-white fw-bold">
+                                <i class="fas fa-question-circle text-primary"></i> Thẻ câu hỏi (Thẻ 1)
+                            </label>
+                            <input asp-for="CardQuestion" class="form-control form-control-lg" 
+                                   placeholder="Ví dụ: 1 dm, 2 × 3, 1 kg..." required />
+                            <span asp-validation-for="CardQuestion" class="text-danger"></span>
+                            <small class="form-text text-white-50">Nhập nội dung thẻ đầu tiên (câu hỏi, phép tính, đơn vị...)</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="CardAnswer" class="form-label text-white fw-bold">
+                                <i class="fas fa-check-circle text-success"></i> Thẻ đáp án (Thẻ 2)
+                            </label>
+                            <input asp-for="CardAnswer" class="form-control form-control-lg" 
+                                   placeholder="Ví dụ: 10 cm, 6, 1000 g..." required />
+                            <span asp-validation-for="CardAnswer" class="text-danger"></span>
+                            <small class="form-text text-white-50">Nhập nội dung thẻ thứ hai có giá trị tương đương</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="OrderIndex" class="form-label text-white fw-bold">
+                                <i class="fas fa-sort-numeric-down"></i> Thứ tự
+                            </label>
+                            <input asp-for="OrderIndex" type="number" class="form-control" 
+                                   value="1" min="1" required />
+                            <span asp-validation-for="OrderIndex" class="text-danger"></span>
+                            <small class="form-text text-white-50">Thứ tự hiển thị (số nhỏ hiện trước)</small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-lightbulb"></i> 
+                            <strong>Hướng dẫn:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Tạo các cặp thẻ có giá trị tương đương (VD: "1 dm" và "10 cm")</li>
+                                <li>Học sinh sẽ ghép 2 thẻ giống nhau để làm chúng biến mất</li>
+                                <li>Nên tạo ít nhất 5-10 cặp thẻ cho mỗi bài học</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a asp-action="GameContents" asp-route-lessonId="@Model.LessonId" 
+                               class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Hủy
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Lưu cặp thẻ
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Preview section -->
+            <div class="card shadow-sm mt-4" style="background: rgba(42, 27, 61, 0.95); border: 1px solid #4e346e;">
+                <div class="card-header bg-dark text-white">
+                    <i class="fas fa-eye"></i> Xem trước
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 text-center mb-3">
+                            <div class="preview-card bg-primary text-white p-4 rounded" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
+                                <h4 id="preview-question">1 dm</h4>
+                            </div>
+                            <small class="text-white-50">Thẻ câu hỏi</small>
+                        </div>
+                        <div class="col-md-6 text-center mb-3">
+                            <div class="preview-card bg-success text-white p-4 rounded" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
+                                <h4 id="preview-answer">10 cm</h4>
+                            </div>
+                            <small class="text-white-50">Thẻ đáp án</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: radial-gradient(circle at 20% 50%, rgba(120, 40, 200, 0.3), transparent 40%),
+                    radial-gradient(circle at 80% 80%, rgba(255, 0, 150, 0.2), transparent 40%),
+                    radial-gradient(circle at 40% 20%, rgba(0, 210, 255, 0.2), transparent 30%),
+                    #0a0118;
+        min-height: 100vh;
+    }
+
+    .preview-card {
+        transition: transform 0.3s;
+    }
+
+    .preview-card:hover {
+        transform: scale(1.05);
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Live preview
+        document.getElementById('CardQuestion').addEventListener('input', function() {
+            document.getElementById('preview-question').textContent = this.value || '1 dm';
+        });
+
+        document.getElementById('CardAnswer').addEventListener('input', function() {
+            document.getElementById('preview-answer').textContent = this.value || '10 cm';
+        });
+    </script>
+}
+

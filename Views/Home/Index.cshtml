@@ -1,0 +1,661 @@
+﻿@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<style>
+    /* ===================================
+       VŨ TRỤ TOÁN HỌC - Nền động Space Theme
+       =================================== */
+    
+    .space-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(180deg, #e0e7ff 0%, #c7d2fe 35%, #a5b4fc 70%, #ddd6fe 100%);
+        opacity: 0.5;
+        overflow: hidden;
+    }
+    
+    /* Shooting stars */
+    .shooting-star {
+        position: absolute;
+        height: 2px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent);
+        animation: shootingStar 6s linear infinite;
+        opacity: 0.3;
+    }
+
+    @@keyframes shootingStar {
+        0% { transform: translateX(0) translateY(0); opacity: 0.6; }
+        100% { transform: translateX(-220px) translateY(220px); opacity: 0; }
+    }
+
+    .shooting-star:nth-child(1) { top: 10%; left: 80%; width: 100px; animation-delay: 0s; }
+    .shooting-star:nth-child(2) { top: 30%; left: 60%; width: 80px; animation-delay: 2s; }
+    .shooting-star:nth-child(3) { top: 50%; left: 90%; width: 120px; animation-delay: 4s; }
+    .shooting-star:nth-child(4) { top: 70%; left: 40%; width: 90px; animation-delay: 6s; }
+    .shooting-star:nth-child(5) { top: 20%; left: 30%; width: 110px; animation-delay: 8s; }
+    
+    /* Twinkling stars */
+    .star-field {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(2px 2px at 20% 30%, white, transparent),
+            radial-gradient(2px 2px at 60% 70%, white, transparent),
+            radial-gradient(1px 1px at 50% 50%, white, transparent),
+            radial-gradient(1px 1px at 80% 10%, white, transparent),
+            radial-gradient(2px 2px at 90% 60%, white, transparent),
+            radial-gradient(1px 1px at 33% 80%, white, transparent),
+            radial-gradient(2px 2px at 70% 40%, white, transparent);
+        background-size: 200% 200%;
+        animation: starTwinkle 12s ease-in-out infinite;
+        opacity: 0.4;
+    }
+
+    @@keyframes starTwinkle {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; }
+    }
+    
+    /* Nebula clouds */
+    .nebula {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.08;
+        animation: nebulaFloat 20s ease-in-out infinite;
+    }
+    
+    .nebula-1 {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(167, 139, 250, 0.6), transparent);
+        top: 10%;
+        left: 5%;
+        animation-duration: 25s;
+    }
+    
+    .nebula-2 {
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(252, 211, 77, 0.5), transparent);
+        top: 50%;
+        right: 10%;
+        animation-duration: 30s;
+        animation-delay: 5s;
+    }
+    
+    .nebula-3 {
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, rgba(96, 165, 250, 0.5), transparent);
+        bottom: 10%;
+        left: 40%;
+        animation-duration: 28s;
+        animation-delay: 10s;
+    }
+    
+    @@keyframes nebulaFloat {
+        0%, 100% {
+            transform: translate(0, 0) scale(1);
+        }
+        33% {
+            transform: translate(30px, -30px) scale(1.1);
+        }
+        66% {
+            transform: translate(-30px, 30px) scale(0.9);
+        }
+    }
+    
+    /* Glowing particles */
+    .particle {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 50%;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+        animation: particleFloat 12s ease-in-out infinite;
+    }
+
+    @@keyframes particleFloat {
+        0%, 100% { transform: translateY(0) translateX(0); opacity: 0.4; }
+        50% { transform: translateY(-60px) translateX(30px); opacity: 0.85; }
+    }
+    
+    /* Hero Section với enhanced glass effect */
+    .hero-cosmic {
+        position: relative;
+        min-height: 650px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        margin-bottom: 4rem;
+    }
+    
+    .hero-glass {
+        background: transparent;
+        backdrop-filter: none;
+        border-radius: 35px;
+        padding: 4.5rem 3.5rem;
+        box-shadow: none;
+        animation: heroFloat 4s ease-in-out infinite;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-glass::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: rotateShine 15s linear infinite;
+        pointer-events: none;
+    }
+    
+    @@keyframes rotateShine {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @@keyframes heroFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-12px); }
+    }
+    
+    .hero-title-cosmic {
+        font-size: 4.5rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 30%, #f59e0b 60%, #fbbf24 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        background-size: 200% 200%;
+        animation: gradientShift 5s ease infinite, fadeInDown 0.8s ease-out;
+        filter: drop-shadow(0 4px 20px rgba(139, 92, 246, 0.4));
+        margin-bottom: 1.5rem;
+        letter-spacing: -1px;
+    }
+    
+    @@keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    @@keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .hero-subtitle-cosmic {
+        color: #1f2937;
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.6;
+        max-width: 820px;
+        margin: 0 auto 2rem;
+        text-shadow: 0 2px 10px rgba(255, 255, 255, 0.8);
+        animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        padding: 0.5rem 1rem;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        border-radius: 15px;
+    }
+    
+    @@keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .rocket-icon {
+        display: inline-block;
+        animation: rocketFloat 2s ease-in-out infinite;
+        filter: drop-shadow(0 5px 20px rgba(139, 92, 246, 0.6));
+    }
+    
+    @@keyframes rocketFloat {
+        0%, 100% { transform: translateY(0) rotate(-15deg); }
+        50% { transform: translateY(-25px) rotate(-15deg); }
+    }
+    
+    /* Buttons with enhanced cosmic effect */
+    .btn-cosmic {
+        background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f59e0b 100%);
+        background-size: 200% 200%;
+        border: none;
+        color: white;
+        font-weight: 800;
+        padding: 1.3rem 3.5rem;
+        border-radius: 50px;
+        font-size: 1.15rem;
+        box-shadow: 
+            0 10px 35px rgba(139, 92, 246, 0.5),
+            0 5px 15px rgba(236, 72, 153, 0.3);
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.8s ease-out 0.4s backwards, gradientShift 3s ease infinite;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .btn-cosmic::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .btn-cosmic:hover::before {
+        width: 350px;
+        height: 350px;
+    }
+    
+    .btn-cosmic:hover {
+        transform: translateY(-8px) scale(1.08);
+        box-shadow: 
+            0 15px 50px rgba(139, 92, 246, 0.7),
+            0 8px 25px rgba(236, 72, 153, 0.5),
+            0 0 40px rgba(245, 158, 11, 0.3);
+        color: white;
+    }
+    
+    .btn-cosmic-outline {
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+        border: 3px solid #8b5cf6;
+        color: #8b5cf6;
+        font-weight: 800;
+        padding: 1.25rem 3.3rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        transition: all 0.4s ease;
+        animation: fadeInUp 0.8s ease-out 0.6s backwards;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .btn-cosmic-outline:hover {
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        color: white;
+        border-color: transparent;
+        transform: translateY(-8px) scale(1.08);
+        box-shadow: 
+            0 15px 45px rgba(139, 92, 246, 0.6),
+            0 8px 20px rgba(236, 72, 153, 0.4);
+    }
+    
+    /* Feature Cards with vibrant gradients */
+    .feature-card-cosmic {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(15px);
+        border: 3px solid rgba(139, 92, 246, 0.4);
+        border-radius: 25px;
+        padding: 2.5rem 2rem;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.25);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.8s ease-out backwards;
+    }
+    
+    .feature-card-cosmic:nth-child(1) { 
+        animation-delay: 0.8s;
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(139, 92, 246, 0.6);
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+    }
+    .feature-card-cosmic:nth-child(2) { 
+        animation-delay: 1s;
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(245, 158, 11, 0.6);
+        box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+    }
+    .feature-card-cosmic:nth-child(3) { 
+        animation-delay: 1.2s;
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(16, 185, 129, 0.6);
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+    }
+    
+    .feature-card-cosmic::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent 70%);
+        opacity: 0;
+        transition: opacity 0.5s;
+    }
+    
+    .feature-card-cosmic:hover::before {
+        opacity: 1;
+        animation: rotateGlow 4s linear infinite;
+    }
+    
+    @@keyframes rotateGlow {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .feature-card-cosmic:hover {
+        transform: translateY(-15px) scale(1.03);
+        box-shadow: 0 20px 50px rgba(139, 92, 246, 0.3);
+    }
+    
+    .feature-card-cosmic:nth-child(1):hover {
+        box-shadow: 0 20px 50px rgba(139, 92, 246, 0.4);
+        border-color: rgba(139, 92, 246, 0.6);
+    }
+    
+    .feature-card-cosmic:nth-child(2):hover {
+        box-shadow: 0 20px 50px rgba(245, 158, 11, 0.4);
+        border-color: rgba(245, 158, 11, 0.6);
+    }
+    
+    .feature-card-cosmic:nth-child(3):hover {
+        box-shadow: 0 20px 50px rgba(16, 185, 129, 0.4);
+        border-color: rgba(16, 185, 129, 0.6);
+    }
+    
+    .feature-icon-cosmic {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        animation: iconPulse 3s ease-in-out infinite;
+        filter: drop-shadow(0 5px 15px rgba(139, 92, 246, 0.3));
+    }
+    
+    @@keyframes iconPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    
+    .feature-card-cosmic:hover .feature-icon-cosmic {
+        animation: iconBounce 0.8s ease-in-out;
+        filter: drop-shadow(0 8px 25px rgba(139, 92, 246, 0.5));
+    }
+    
+    @@keyframes iconBounce {
+        0%, 100% { transform: translateY(0) scale(1); }
+        25% { transform: translateY(-15px) scale(1.15); }
+        50% { transform: translateY(0) scale(1.1); }
+        75% { transform: translateY(-8px) scale(1.12); }
+    }
+    
+    .feature-title-cosmic {
+        color: #7c3aed;
+        font-weight: 800;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 10px rgba(124, 58, 237, 0.2);
+    }
+    
+    .feature-text-cosmic {
+        color: #1f2937;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        font-weight: 500;
+    }
+    
+    /* Info Section with enhanced glass effect */
+    .info-section-cosmic {
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(167, 139, 250, 0.08) 100%);
+        backdrop-filter: blur(20px);
+        border: 2px solid rgba(139, 92, 246, 0.3);
+        border-radius: 32px;
+        padding: 4rem 3rem;
+        margin: 4rem 0;
+        box-shadow: 0 15px 45px rgba(139, 92, 246, 0.2);
+    }
+    
+    .info-title-cosmic {
+        color: #7c3aed;
+        font-weight: 800;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        animation: fadeInLeft 0.8s ease-out;
+        text-shadow: 0 3px 15px rgba(124, 58, 237, 0.2);
+    }
+    
+    @@keyframes fadeInLeft {
+        from { opacity: 0; transform: translateX(-30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    
+    .info-list-cosmic li {
+        color: #1f2937;
+        font-size: 1.1rem;
+        line-height: 2;
+        animation: fadeInLeft 0.6s ease-out backwards;
+        font-weight: 500;
+    }
+    
+    .info-list-cosmic li:nth-child(1) { animation-delay: 0.2s; }
+    .info-list-cosmic li:nth-child(2) { animation-delay: 0.3s; }
+    .info-list-cosmic li:nth-child(3) { animation-delay: 0.4s; }
+    .info-list-cosmic li:nth-child(4) { animation-delay: 0.5s; }
+    .info-list-cosmic li:nth-child(5) { animation-delay: 0.6s; }
+    
+    .info-list-cosmic i {
+        color: #10b981;
+        font-size: 1.3rem;
+        filter: drop-shadow(0 2px 8px rgba(16, 185, 129, 0.3));
+    }
+    
+    .info-list-cosmic li strong {
+        color: #7c3aed;
+        font-weight: 700;
+    }
+    
+    .astronaut-icon {
+        font-size: 20rem;
+        color: rgba(251, 191, 36, 0.1);
+        animation: astronautFloat 6s ease-in-out infinite;
+    }
+    
+    @@keyframes astronautFloat {
+        0%, 100% {
+            transform: translateY(0) rotate(-5deg);
+        }
+        50% {
+            transform: translateY(-30px) rotate(5deg);
+        }
+    }
+    
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .hero-title-cosmic {
+            font-size: 2.5rem;
+        }
+
+        .hero-subtitle-cosmic {
+            font-size: 1.1rem;
+        }
+
+        .btn-cosmic,
+        .btn-cosmic-outline {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+
+        .feature-icon-cosmic {
+            font-size: 3rem;
+        }
+
+        .astronaut-icon {
+            font-size: 10rem;
+        }
+    }
+
+    @@media (prefers-reduced-motion: reduce) {
+        .shooting-star,
+        .nebula,
+        .particle,
+        .hero-glass,
+        .feature-icon-cosmic,
+        .astronaut-icon {
+            animation: none !important;
+        }
+    }
+</style>
+
+<!-- Space Background -->
+<div class="space-background">
+    <div class="star-field"></div>
+    
+    <!-- Shooting Stars -->
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    
+    <!-- Nebula Clouds -->
+    <div class="nebula nebula-1"></div>
+    <div class="nebula nebula-2"></div>
+    <div class="nebula nebula-3"></div>
+    
+    <!-- Floating Particles -->
+    @for (int i = 0; i < 12; i++)
+    {
+        <div class="particle" style="top: @(Random.Shared.Next(0, 100))%; left: @(Random.Shared.Next(0, 100))%; animation-delay: @(Random.Shared.Next(0, 10))s;"></div>
+    }
+</div>
+
+<!-- Hero Section -->
+<div class="hero-cosmic">
+    <div class="container">
+        <div class="hero-glass text-center">
+            <h1 class="hero-title-cosmic">
+                <i class="fas fa-rocket rocket-icon"></i><br>
+                Vũ trụ Toán học
+            </h1>
+            <p class="hero-subtitle-cosmic">
+                🌟 Học toán vui, dễ hiểu cho học sinh tiểu học 🌟
+            </p>
+            <div class="mt-4">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a class="btn btn-cosmic me-3" asp-controller="Student" asp-action="Lessons">
+                        <i class="fas fa-play-circle"></i> Bắt đầu học ngay
+                    </a>
+                }
+                else
+                {
+                    <a class="btn btn-cosmic me-3" asp-controller="Account" asp-action="Register">
+                        <i class="fas fa-user-plus"></i> Đăng ký miễn phí
+                    </a>
+                    <a class="btn btn-cosmic-outline" asp-controller="Home" asp-action="Browse">
+                        <i class="fas fa-compass"></i> Khám phá ngay
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Feature Cards -->
+<div class="container my-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="feature-card-cosmic text-center h-100">
+                <div class="card-bg-animation"></div>
+                <div class="feature-icon-cosmic">
+                    <i class="fas fa-video" style="color: #a78bfa;"></i>
+                </div>
+                <h3 class="feature-title-cosmic">Video bài giảng dễ hiểu</h3>
+                <p class="feature-text-cosmic">
+                    Video ngắn gọn, rõ ràng, bám sát chương trình từng lớp.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card-cosmic text-center h-100">
+                <div class="card-bg-animation" style="animation-delay: 2s;"></div>
+                <div class="feature-icon-cosmic">
+                    <i class="fas fa-gamepad" style="color: #a78bfa;"></i>
+                </div>
+                <h3 class="feature-title-cosmic">Bài tập tương tác vui nhộn</h3>
+                <p class="feature-text-cosmic">
+                    Trắc nghiệm, kéo thả, nối hình… làm đúng có điểm và huy hiệu.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card-cosmic text-center h-100">
+                <div class="card-bg-animation" style="animation-delay: 4s;"></div>
+                <div class="feature-icon-cosmic">
+                    <i class="fas fa-trophy" style="color: #f59e0b;"></i>
+                </div>
+                <h3 class="feature-title-cosmic">Theo dõi tiến bộ rõ ràng</h3>
+                <p class="feature-text-cosmic">
+                    Xem điểm, biểu đồ và xếp hạng để thấy mình tiến bộ.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Info Section -->
+<div class="container">
+    <div class="info-section-cosmic">
+        <div class="row align-items-center">
+            <div class="col-md-7">
+                <h2 class="info-title-cosmic">Tại sao chọn Vũ trụ Toán học?</h2>
+                <ul class="list-unstyled info-list-cosmic">
+                    <li class="mb-3">
+                        <i class="fas fa-check-circle me-3"></i>
+                        <strong>Chương trình chuẩn:</strong> Bám sát Bộ GD&amp;ĐT
+                    </li>
+                    <li class="mb-3">
+                        <i class="fas fa-check-circle me-3"></i>
+                        <strong>Phù hợp lứa tuổi:</strong> Dành cho học sinh 6-11 tuổi
+                    </li>
+                    <li class="mb-3">
+                        <i class="fas fa-check-circle me-3"></i>
+                        <strong>Học mọi lúc:</strong> Trên mọi thiết bị
+                    </li>
+                    <li class="mb-3">
+                        <i class="fas fa-check-circle me-3"></i>
+                        <strong>Báo cáo phụ huynh:</strong> Theo dõi tiến độ con em
+                    </li>
+                    <li class="mb-3">
+                        <i class="fas fa-check-circle me-3"></i>
+                        <strong>Khích lệ nhẹ nhàng:</strong> Điểm, huy hiệu, xếp hạng
+                    </li>
+                </ul>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a class="btn btn-cosmic mt-3" asp-controller="Student" asp-action="Dashboard">
+                        <i class="fas fa-rocket"></i> Vào Bảng điều khiển
+                    </a>
+                }
+                else
+                {
+                    <a class="btn btn-cosmic mt-3" asp-controller="Account" asp-action="Login">
+                        <i class="fas fa-rocket"></i> Bắt đầu ngay hôm nay
+                    </a>
+                }
+            </div>
+            <div class="col-md-5 text-center">
+                <i class="fas fa-user-astronaut astronaut-icon"></i>
+            </div>
+        </div>
+    </div>
+</div>
+

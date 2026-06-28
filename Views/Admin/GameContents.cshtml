@@ -1,0 +1,169 @@
+﻿@model IEnumerable<MathUniverse.Models.GameContent>
+@{
+    ViewData["Title"] = "Quản lý nội dung trò chơi";
+    var lesson = ViewBag.Lesson as MathUniverse.Models.Lesson;
+}
+
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="fw-bold text-white">
+                <i class="fas fa-gamepad text-warning"></i> Quản lý nội dung trò chơi
+            </h2>
+            @if (lesson != null)
+            {
+                <p class="text-white">Bài học: <strong>@lesson.Title</strong> - Lớp @lesson.Grade</p>
+            }
+        </div>
+        <div>
+            <a asp-action="Lessons" class="btn btn-secondary me-2">
+                <i class="fas fa-arrow-left"></i> Về danh sách bài học
+            </a>
+            <a asp-action="CreateGameContent" asp-route-lessonId="@(lesson?.LessonId)" class="btn btn-success">
+                <i class="fas fa-plus"></i> Thêm cặp thẻ mới
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm" style="background: rgba(42, 27, 61, 0.95); border: 1px solid #4e346e;">
+    <div class="card-body">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width: 5%;">STT</th>
+                            <th style="width: 35%;">Câu hỏi/Thẻ 1</th>
+                            <th style="width: 35%;">Đáp án/Thẻ 2</th>
+                            <th style="width: 10%;">Thứ tự</th>
+                            <th style="width: 15%;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int index = 1; }
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-white">@index</td>
+                                <td>
+                                    <span class="badge bg-primary" style="font-size: 1rem; padding: 10px 15px;">
+                                        @item.CardQuestion
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success" style="font-size: 1rem; padding: 10px 15px;">
+                                        @item.CardAnswer
+                                    </span>
+                                </td>
+                                <td class="text-white">@item.OrderIndex</td>
+                                <td>
+                                    <a asp-action="EditGameContent" asp-route-id="@item.GameContentId" 
+                                       class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button onclick="deleteGameContent(@item.GameContentId)" 
+                                            class="btn btn-sm btn-danger" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-info mt-3">
+                <i class="fas fa-info-circle"></i> 
+                <strong>Tổng số cặp thẻ:</strong> @Model.Count() cặp
+                <br>
+                <small>Mỗi cặp gồm 1 câu hỏi và 1 đáp án tương ứng. Học sinh sẽ ghép các cặp thẻ có giá trị bằng nhau.</small>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-gamepad fa-4x text-muted mb-3"></i>
+                <p class="text-white">Chưa có nội dung trò chơi nào cho bài học này.</p>
+                <a asp-action="CreateGameContent" asp-route-lessonId="@(lesson?.LessonId)" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Tạo cặp thẻ đầu tiên
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    body {
+        background: radial-gradient(circle at 20% 50%, rgba(120, 40, 200, 0.3), transparent 40%),
+                    radial-gradient(circle at 80% 80%, rgba(255, 0, 150, 0.2), transparent 40%),
+                    radial-gradient(circle at 40% 20%, rgba(0, 210, 255, 0.2), transparent 30%),
+                    #0a0118;
+        min-height: 100vh;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        function deleteGameContent(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa cặp thẻ này?')) {
+                fetch('/Admin/DeleteGameContent/' + id, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Xóa cặp thẻ thành công!', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showNotification('Có lỗi xảy ra: ' + (data.message || 'Không thể xóa'), 'error');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Có lỗi xảy ra khi xóa', 'error');
+                    console.error('Error:', error);
+                });
+            }
+        }
+
+        function showNotification(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        // Auto-hide success messages
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert-success');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 3000);
+            });
+        });
+    </script>
+}
+

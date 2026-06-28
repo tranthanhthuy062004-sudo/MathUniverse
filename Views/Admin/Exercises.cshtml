@@ -1,0 +1,172 @@
+﻿@model IEnumerable<MathUniverse.Models.Exercise>
+@{
+    ViewData["Title"] = "Quản lý bài tập";
+    var lessonId = ViewBag.LessonId as int?;
+    var lessonTitle = ViewBag.LessonTitle as string;
+}
+
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="fw-bold">
+                <i class="fas fa-tasks text-success"></i> Quản lý bài tập
+            </h2>
+            @if (!string.IsNullOrEmpty(lessonTitle))
+            {
+                <p class="text-muted">Bài học: <strong>@lessonTitle</strong></p>
+            }
+            else
+            {
+                <p class="text-muted">Danh sách tất cả bài tập trong hệ thống</p>
+            }
+        </div>
+        @if (lessonId.HasValue)
+        {
+            <div>
+                <a asp-action="Lessons" class="btn btn-secondary me-2">
+                    <i class="fas fa-arrow-left"></i> Về danh sách bài học
+                </a>
+                <a asp-action="CreateExercise" asp-route-lessonId="@lessonId" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Tạo bài tập mới
+                </a>
+            </div>
+        }
+        else
+        {
+            <a asp-action="Lessons" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Về danh sách bài học
+            </a>
+        }
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Tiêu đề</th>
+                        <th>Bài học</th>
+                        <th>Lớp</th>
+                        <th>Số câu hỏi</th>
+                        <th>Điểm đạt</th>
+                        <th>Thời gian</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        foreach (var exercise in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold">@exercise.Title</div>
+                                    @if (!string.IsNullOrEmpty(exercise.Description))
+                                    {
+                                        <small class="text-muted text-truncate d-inline-block" style="max-width: 200px;">
+                                            @exercise.Description
+                                        </small>
+                                    }
+                                </td>
+                                <td>@exercise.Lesson.Title</td>
+                                <td><span class="badge bg-info">Lớp @exercise.Lesson.Grade</span></td>
+                                <td>
+                                    <span class="badge bg-secondary">@exercise.Questions.Count câu</span>
+                                </td>
+                                <td>@exercise.PassingScore điểm</td>
+                                <td>
+                                    @if (exercise.TimeLimit > 0)
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-clock"></i> @exercise.TimeLimit phút
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-muted">Không giới hạn</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (exercise.IsActive)
+                                    {
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Tạm ẩn</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a asp-controller="Admin" asp-action="EditExercise" asp-route-id="@exercise.ExerciseId" class="btn btn-sm btn-outline-warning me-1" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteExercise(@exercise.ExerciseId)" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="fas fa-folder-open fa-2x mb-3"></i>
+                                <p>Chưa có bài tập nào. 
+                                    @if (lessonId.HasValue)
+                                    {
+                                        <text>Hãy tạo bài tập mới!</text>
+                                    }
+                                    else
+                                    {
+                                        <text>Vui lòng chọn bài học để tạo bài tập.</text>
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function deleteExercise(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa bài tập này? Tất cả câu hỏi và kết quả bài làm sẽ bị xóa!')) {
+                fetch(`/Admin/DeleteExercise/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Xóa bài tập thành công!');
+                        location.reload();
+                    } else {
+                        alert('Có lỗi xảy ra khi xóa bài tập!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra!');
+                });
+            }
+        }
+    </script>
+}
+

@@ -1,0 +1,104 @@
+﻿@model List<MathUniverse.Models.Lesson>
+@{
+    ViewData["Title"] = "Khám phá bài học";
+    var selectedGrade = ViewBag.SelectedGrade;
+}
+
+<div class="mb-4">
+    <h2 class="fw-bold">
+        <i class="fas fa-compass text-primary"></i> Khám phá bài học
+    </h2>
+    <p class="text-muted">Xem trước các bài học để tìm hiểu nội dung</p>
+</div>
+
+<!-- Grade Tabs - Đồng bộ thiết kế -->
+<div class="grade-tabs-container mb-5">
+    <div class="grade-tabs">
+        <a asp-controller="Home" asp-action="Browse" 
+           class="grade-tab @(selectedGrade == null ? "active" : "")">
+            <i class="fas fa-th-large"></i>
+            <span class="grade-label">Tất cả</span>
+        </a>
+        @for (int i = 1; i <= 5; i++)
+        {
+            var icons = new[] { "fa-dice-one", "fa-dice-two", "fa-dice-three", "fa-dice-four", "fa-dice-five" };
+            var colors = new[] { "grade-1", "grade-2", "grade-3", "grade-4", "grade-5" };
+            <a asp-controller="Home" asp-action="Browse" asp-route-grade="@i" 
+               class="grade-tab @colors[i-1] @(selectedGrade == i ? "active" : "")">
+                <i class="fas @icons[i-1]"></i>
+                <span class="grade-label">Lớp @i</span>
+            </a>
+        }
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var lesson in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    @if (!string.IsNullOrEmpty(lesson.ThumbnailUrl))
+                    {
+                        <img src="@lesson.ThumbnailUrl" class="card-img-top" alt="@lesson.Title" style="height: 200px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <div class="card-img-top bg-primary d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-book-open text-white" style="font-size: 4rem;"></i>
+                        </div>
+                    }
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <span class="badge bg-primary">Lớp @lesson.Grade</span>
+                            <span class="badge bg-secondary">@lesson.Topic</span>
+                        </div>
+                        <h5 class="card-title">@lesson.Title</h5>
+                        <p class="card-text text-muted">
+                            @if (!string.IsNullOrEmpty(lesson.Description) && lesson.Description.Length > 100)
+                            {
+                                @(lesson.Description.Substring(0, 100) + "...")
+                            }
+                            else
+                            {
+                                @lesson.Description
+                            }
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-tasks"></i> @lesson.Exercises.Count bài tập
+                            </small>
+                            <a asp-controller="Home" asp-action="LessonPreview" asp-route-id="@lesson.LessonId" 
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye"></i> Xem thử
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+        <h4>Chưa có bài học nào</h4>
+        <p class="text-muted">Vui lòng quay lại sau</p>
+    </div>
+}
+
+@if (!User.Identity?.IsAuthenticated == true)
+{
+    <div class="alert alert-info mt-5">
+        <h5><i class="fas fa-info-circle"></i> Muốn học toàn bộ khóa học?</h5>
+        <p class="mb-0">
+            Đăng ký tài khoản để truy cập đầy đủ tất cả bài học và tính năng!
+            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm ms-2">
+                <i class="fas fa-user-plus"></i> Đăng ký ngay
+            </a>
+        </p>
+    </div>
+}
+

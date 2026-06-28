@@ -1,0 +1,416 @@
+﻿@model MathUniverse.Models.ViewModels.LessonDetailViewModel
+@{
+    ViewData["Title"] = Model.Lesson.Title;
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                <h4 class="mb-0" style="color: #ffffff;">
+                    <i class="fas fa-book-open"></i> @Model.Lesson.Title
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="badge bg-primary me-2">Lớp @Model.Lesson.Grade</span>
+                    <span class="badge bg-secondary">@Model.Lesson.Topic</span>
+                </div>
+                
+                @if (!string.IsNullOrEmpty(Model.Lesson.Description))
+                {
+                    <p class="text-muted">@Model.Lesson.Description</p>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Lesson.VideoUrl))
+                {
+                    var embedUrl = Model.Lesson.VideoUrl;
+                    var videoId = "";
+                    
+                    if (embedUrl.Contains("youtu.be/"))
+                    {
+                        videoId = embedUrl.Split("youtu.be/")[1].Split('?')[0];
+                    }
+                    else if (embedUrl.Contains("youtube.com/embed/"))
+                    {
+                        videoId = embedUrl.Split("embed/")[1].Split('?')[0];
+                    }
+                    else if (embedUrl.Contains("v="))
+                    {
+                        var parts = embedUrl.Split("v=");
+                        if (parts.Length > 1)
+                        {
+                            videoId = parts[1].Split('&')[0];
+                        }
+                    }
+
+                    <div class="mb-3">
+                        <h5><i class="fab fa-youtube text-danger"></i> Video bài giảng</h5>
+                        <div class="ratio ratio-16x9 mb-3">
+                            <div id="youtube-player"></div>
+                        </div>
+
+                        <!-- Hidden fields for JS -->
+                        <input type="hidden" id="videoId" value="@videoId" />
+                        <input type="hidden" id="lessonId" value="@Model.Lesson.LessonId" />
+
+                        <!-- Success message when video completed -->
+                        <div id="video-completed-message" style="display: none;" class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> 🎉 Chúc mừng! Bạn đã hoàn thành xem bài giảng!
+                            Bây giờ bạn có thể làm bài tập và chơi game.
+                        </div>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Lesson.PdfUrl))
+                {
+                    <div class="mb-3">
+                        <h5><i class="fas fa-file-pdf text-danger"></i> Tài liệu bài giảng (PDF)</h5>
+                        <div class="card border-primary">
+                            <div class="card-body text-center">
+                                <iframe src="@Model.Lesson.PdfUrl" 
+                                        style="width: 100%; height: 600px; border: none;" 
+                                        id="pdf-viewer"></iframe>
+                                <div class="mt-2">
+                                    <a href="@Model.Lesson.PdfUrl" target="_blank" class="btn btn-outline-primary">
+                                        <i class="fas fa-external-link-alt"></i> Mở PDF trong tab mới
+                                    </a>
+                                    <a href="@Model.Lesson.PdfUrl" download class="btn btn-outline-success">
+                                        <i class="fas fa-download"></i> Tải xuống PDF
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Lesson.TheoryContent))
+                {
+                    <div class="theory-content">
+                        <h5><i class="fas fa-lightbulb text-warning"></i> Tóm tắt lý thuyết</h5>
+                        @Html.Raw(Model.Lesson.TheoryContent)
+                    </div>
+                }
+            </div>
+        </div>
+
+
+        <!-- Game Section -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header" style="background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%); border: none;">
+                <h5 class="mb-0" style="color: #ffffff;">
+                    <i class="fas fa-gamepad"></i> Trò chơi
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (!Model.CanAccessExercises)
+                {
+                    <div class="alert alert-warning" id="game-locked-message">
+                        <i class="fas fa-info-circle"></i>
+                        @if (!string.IsNullOrEmpty(Model.Lesson.VideoUrl))
+                        {
+                            <span>Bạn cần xem hết 100% video bài giảng để mở khóa trò chơi.</span>
+                        }
+                        else
+                        {
+                            <span>Trò chơi chưa sẵn sàng.</span>
+                        }
+                    </div>
+                }
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h6 class="mb-1">Trò chơi lật thẻ - Tìm cặp tương ứng</h6>
+                        <p class="mb-0 text-muted">Trò chơi giúp củng cố kiến thức một cách vui nhộn</p>
+                    </div>
+                    <div>
+                        @if (Model.CanAccessExercises)
+                        {
+                            <a asp-controller="Game" asp-action="MemoryGame" asp-route-lessonId="@Model.Lesson.LessonId" 
+                               class="btn btn-warning" id="game-button-unlocked">
+                                <i class="fas fa-play"></i> Chơi ngay
+                            </a>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary" disabled id="game-button-locked">
+                                <i class="fas fa-lock"></i> Chưa mở
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Exercises.Any())
+        {
+            <div class="card shadow-sm border-0">
+                <div class="card-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">
+                    <h5 class="mb-0" style="color: #ffffff;">
+                        <i class="fas fa-tasks"></i> Bài tập thực hành
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (!Model.CanAccessExercises)
+                    {
+                        <div class="alert alert-warning" id="exercise-locked-message">
+                            <i class="fas fa-info-circle"></i>
+                            @if (!string.IsNullOrEmpty(Model.Lesson.VideoUrl))
+                            {
+                                <span>Bạn cần xem hết 100% video bài giảng để mở khóa các bài tập.</span>
+                            }
+                            else
+                            {
+                                <span>Bài tập chưa sẵn sàng.</span>
+                            }
+                        </div>
+                    }
+
+                    <div class="list-group">
+                        @foreach (var exercise in Model.Exercises)
+                        {
+                            <div class="list-group-item @(!Model.CanAccessExercises ? "disabled" : "")">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">
+                                            @exercise.Title
+                                            @if (exercise.IsPassed)
+                                            {
+                                                <span class="badge bg-success ms-2">
+                                                    <i class="fas fa-check"></i> Đã đạt
+                                                </span>
+                                            }
+                                        </h6>
+                                        <p class="mb-1 small text-muted">@exercise.Description</p>
+                                        <div>
+                                            <small class="text-muted">
+                                                @exercise.QuestionCount câu hỏi | 
+                                                Còn @(exercise.MaxAttempts - (exercise.AttemptsUsed ?? 0)) lần làm
+                                            </small>
+                                        </div>
+                                        @if (exercise.BestScore.HasValue)
+                                        {
+                                            <div class="mt-2">
+                                                <small class="text-muted">Điểm cao nhất: <strong>@exercise.BestScore.Value.ToString("F1")</strong>/10</small>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div>
+                                        @if (Model.CanAccessExercises)
+                                        {
+                                            <a asp-controller="Student" asp-action="Exercise" asp-route-id="@exercise.ExerciseId" 
+                                               class="btn btn-primary exercise-button-unlocked"
+                                               data-exercise-id="@exercise.ExerciseId">
+                                                <i class="fas fa-pencil-alt"></i> Làm bài
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-secondary exercise-button-locked" disabled
+                                                    data-exercise-id="@exercise.ExerciseId">
+                                                <i class="fas fa-lock"></i> Chưa mở
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4 border-0">
+            <div class="card-header" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none;">
+                <h6 class="mb-0" style="color: #ffffff;">
+                    <i class="fas fa-chart-line"></i> Tiến độ học tập
+                </h6>
+            </div>
+            <div class="card-body">
+                @if (Model.Progress != null)
+                {
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Video đã xem</span>
+                            <span>@Model.Progress.CompletionPercentage.ToString("F0")%</span>
+                        </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-info" role="progressbar" 
+                                 style="width: @(Model.Progress.CompletionPercentage)%">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="small text-muted mb-0">
+                        Trạng thái: 
+                        <strong>
+                            @{
+                                var statusText = (Model.Progress?.Status ?? MathUniverse.Models.ProgressStatus.NotStarted) switch
+                                {
+                                    MathUniverse.Models.ProgressStatus.NotStarted => "Chưa bắt đầu",
+                                    MathUniverse.Models.ProgressStatus.InProgress => "Đang học",
+                                    MathUniverse.Models.ProgressStatus.Completed => "Đã hoàn thành",
+                                    MathUniverse.Models.ProgressStatus.Passed => "Đã đạt",
+                                    _ => "Không xác định"
+                                };
+                            }
+                            @statusText
+                        </strong>
+                    </p>
+                }
+                else
+                {
+                    <p class="text-muted">Bắt đầu học để theo dõi tiến độ</p>
+                }
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <a asp-controller="Student" asp-action="Lessons" class="btn btn-outline-primary w-100 mb-2">
+                    <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // 1. Load YouTube IFrame API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // 2. Initialize Player
+        var player;
+        var lessonId = document.getElementById('lessonId')?.value;
+        var videoId = document.getElementById('videoId')?.value;
+        var videoCompleted = false;
+
+        function onYouTubeIframeAPIReady() {
+            if (!videoId) return; // No video to play
+            
+            player = new YT.Player('youtube-player', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: {
+                    'playsinline': 1,
+                    'rel': 0, // Don't show related videos
+                    'modestbranding': 1
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        // 3. Handle player state changes
+        function onPlayerStateChange(event) {
+            // YT.PlayerState.ENDED = 0 (video ended)
+            if (event.data === YT.PlayerState.ENDED && !videoCompleted) {
+                console.log("Video completed!");
+                videoCompleted = true;
+                markVideoAsCompleted();
+            }
+        }
+
+        // 4. Call server to mark video as completed
+        function markVideoAsCompleted() {
+            fetch('@Url.Action("CompleteVideo", "Student")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ lessonId: parseInt(lessonId) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    const messageDiv = document.getElementById('video-completed-message');
+                    if (messageDiv) {
+                        messageDiv.style.display = 'block';
+                        
+                        // Auto-hide after 3 seconds
+                        setTimeout(() => {
+                            messageDiv.style.display = 'none';
+                        }, 3000);
+                    }
+
+                    // Unlock game button
+                    const gameLockedBtn = document.getElementById('game-button-locked');
+                    if (gameLockedBtn) {
+                        const gameDiv = gameLockedBtn.parentElement;
+                        gameDiv.innerHTML = `
+                            <a href="/Game/MemoryGame?lessonId=${lessonId}" class="btn btn-warning" id="game-button-unlocked">
+                                <i class="fas fa-play"></i> Chơi ngay
+                            </a>
+                        `;
+                    }
+
+                    // Hide game locked message
+                    const gameLockedMsg = document.getElementById('game-locked-message');
+                    if (gameLockedMsg) {
+                        gameLockedMsg.style.display = 'none';
+                    }
+
+                    // Unlock practice button
+                    const practiceLockedBtn = document.getElementById('practice-button-locked');
+                    if (practiceLockedBtn) {
+                        const practiceDiv = practiceLockedBtn.parentElement;
+                        practiceDiv.innerHTML = `
+                            <a href="/Student/Practice?lessonId=${lessonId}" class="btn btn-success" id="practice-button-unlocked">
+                                <i class="fas fa-pencil-alt"></i> Làm bài
+                            </a>
+                        `;
+                    }
+
+                    // Hide practice locked message
+                    const practiceLockedMsg = document.getElementById('practice-locked-message');
+                    if (practiceLockedMsg) {
+                        practiceLockedMsg.style.display = 'none';
+                    }
+
+                    // Unlock exercise buttons
+                    const exerciseLockedBtns = document.querySelectorAll('.exercise-button-locked');
+                    exerciseLockedBtns.forEach(btn => {
+                        const exerciseId = btn.getAttribute('data-exercise-id');
+                        if (exerciseId) {
+                            const parentDiv = btn.parentElement;
+                            parentDiv.innerHTML = `
+                                <a href="/Student/Exercise/${exerciseId}" class="btn btn-primary exercise-button-unlocked" data-exercise-id="${exerciseId}">
+                                    <i class="fas fa-pencil-alt"></i> Làm bài
+                                </a>
+                            `;
+                        }
+                    });
+
+                    // Hide exercise locked message
+                    const exerciseLockedMsg = document.getElementById('exercise-locked-message');
+                    if (exerciseLockedMsg) {
+                        exerciseLockedMsg.style.display = 'none';
+                    }
+
+                    // Update progress bar
+                    const progressBar = document.querySelector('.progress-bar');
+                    if (progressBar) {
+                        progressBar.style.width = '100%';
+                        const progressText = progressBar.parentElement.previousElementSibling.querySelector('span:last-child');
+                        if (progressText) {
+                            progressText.textContent = '100%';
+                        }
+                    }
+
+                    console.log("Video marked as completed successfully!");
+                }
+            })
+            .catch(error => {
+                console.error('Error marking video as completed:', error);
+            });
+        }
+    </script>
+}

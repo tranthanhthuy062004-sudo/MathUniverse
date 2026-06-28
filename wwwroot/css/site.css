@@ -1,0 +1,1600 @@
+/* ========================================
+/* ========================================
+   VŨ TRỤ TOÁN HỌC - THEME COLORS
+   Màu chủ đạo: Tím - Trắng - Vàng
+   ======================================== */
+
+:root {
+  /* Primary Colors */
+  --primary-purple: #8b5cf6;
+  --primary-purple-dark: #7c3aed;
+  --primary-purple-light: #a78bfa;
+  --primary-purple-lighter: #c4b5fd;
+  
+  --secondary-yellow: #f59e0b;
+  --secondary-yellow-dark: #d97706;
+  --secondary-yellow-light: #fbbf24;
+  --secondary-yellow-lighter: #fde68a;
+  
+  --accent-white: #ffffff;
+  --accent-light: #f9fafb;
+  
+  /* Background Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #faf5ff;
+  --bg-tertiary: #f3f4f6;
+  --bg-card: #ffffff;
+  --bg-hover: #faf5ff;
+  
+  /* Text Colors */
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --text-on-purple: #ffffff;
+  --text-on-yellow: #1f2937;
+  
+  /* Border Colors */
+  --border-color: #e5e7eb;
+  --border-light: #f3f4f6;
+  --border-focus: #8b5cf6;
+  
+  /* Shadow */
+  --shadow-sm: 0 1px 3px 0 rgba(139, 92, 246, 0.08);
+  --shadow-md: 0 4px 12px -2px rgba(139, 92, 246, 0.12);
+  --shadow-lg: 0 10px 25px -5px rgba(139, 92, 246, 0.18);
+  --shadow-xl: 0 20px 40px -10px rgba(139, 92, 246, 0.25);
+}
+
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+
+html {
+  font-size: 14px;
+  scroll-behavior: smooth;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ========================================
+   GLOBAL TEXT COLORS - Consistent across all pages
+   ======================================== */
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+}
+
+p {
+  color: var(--text-primary);
+}
+
+.text-muted {
+  color: var(--text-secondary) !important;
+}
+
+/* Strong tags in lists and content */
+strong {
+  color: var(--primary-purple);
+  font-weight: 700;
+}
+
+/* ========================================
+   BOOTSTRAP OVERRIDES - PURPLE THEME
+   Cải thiện buttons & interactions
+   ======================================== */
+
+/* Primary Button - Purple */
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.625rem 1.25rem;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--primary-purple) !important;
+  border-color: var(--primary-purple) !important;
+  color: var(--text-on-purple) !important;
+  box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--primary-purple-dark) !important;
+  border-color: var(--primary-purple-dark) !important;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(139, 92, 246, 0.2);
+}
+
+.btn-outline-primary {
+  color: var(--primary-purple) !important;
+  border-color: var(--primary-purple) !important;
+  background-color: transparent !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-purple) !important;
+  border-color: var(--primary-purple) !important;
+  color: var(--text-on-purple) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+/* Success Button - Yellow */
+.btn-success {
+  background-color: var(--secondary-yellow) !important;
+  border-color: var(--secondary-yellow) !important;
+  color: var(--text-on-yellow) !important;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+.btn-success:hover,
+.btn-success:focus {
+  background-color: var(--secondary-yellow-dark) !important;
+  border-color: var(--secondary-yellow-dark) !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Warning Button */
+.btn-warning {
+  background-color: var(--secondary-yellow) !important;
+  border-color: var(--secondary-yellow) !important;
+  color: var(--text-on-yellow) !important;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+.btn-warning:hover {
+  background-color: var(--secondary-yellow-dark) !important;
+  transform: translateY(-2px);
+}
+
+/* Disabled state */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Badge Colors */
+.badge.bg-primary {
+  background-color: var(--primary-purple) !important;
+}
+
+.badge.bg-warning {
+  background-color: var(--secondary-yellow) !important;
+  color: var(--text-on-yellow) !important;
+}
+
+/* Progress Bar */
+.progress-bar {
+  background-color: var(--primary-purple) !important;
+}
+
+.progress {
+  background-color: var(--bg-secondary);
+}
+
+/* Links - Cải thiện UX */
+a {
+  color: var(--primary-purple);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+a:hover {
+  color: var(--primary-purple-dark);
+  text-decoration: none; /* BỎ gạch chân khi hover */
+}
+
+/* Optional: Thêm underline animation mượt mà */
+a.underline-hover {
+  position: relative;
+}
+
+a.underline-hover::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--primary-purple);
+  transition: width 0.3s ease;
+}
+
+a.underline-hover:hover::after {
+  width: 100%;
+}
+
+/* Nav links - Không gạch chân */
+.nav-link {
+  text-decoration: none !important;
+}
+
+.nav-link:hover {
+  text-decoration: none !important;
+}
+
+/* ========================================
+   NAVBAR - Cải thiện đáng kể
+   ======================================== */
+
+.navbar.bg-primary {
+  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-dark) 100%) !important;
+  box-shadow: var(--shadow-md);
+  padding: 1rem 0;
+}
+
+.navbar-dark .navbar-brand {
+  color: var(--text-on-purple) !important;
+  font-weight: 700;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.navbar-dark .navbar-brand:hover {
+  transform: scale(1.05);
+  color: var(--secondary-yellow) !important;
+}
+
+.navbar-dark .nav-link {
+  color: rgba(255, 255, 255, 0.95) !important;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  border-radius: 6px;
+  margin: 0 0.25rem;
+}
+
+.navbar-dark .nav-link:hover {
+  color: var(--secondary-yellow) !important;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.navbar-dark .nav-link.active {
+  color: var(--secondary-yellow) !important;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Navbar toggler */
+.navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.2);
+}
+
+/* ========================================
+   CARDS - Cải thiện UX
+   ======================================== */
+
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text-primary);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+  border-color: var(--primary-purple-light);
+}
+
+/* Card không hover (cho stats cards) */
+.card.no-hover:hover {
+  transform: none;
+}
+
+.card-header {
+  background-color: var(--bg-secondary);
+  border-bottom: 2px solid var(--primary-purple);
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 1rem 1.5rem;
+}
+
+.card-header.bg-primary {
+  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-dark) 100%) !important;
+  color: var(--text-on-purple) !important;
+  border: none;
+}
+
+.card-header.bg-success {
+  background: linear-gradient(135deg, var(--secondary-yellow) 0%, var(--secondary-yellow-dark) 100%) !important;
+  color: var(--text-on-yellow) !important;
+  border: none;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Card với image */
+.card img {
+  transition: transform 0.3s ease;
+}
+
+.card:hover img {
+  transform: scale(1.05);
+}
+
+/* ========================================
+   FORMS
+   ======================================== */
+
+.form-control {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  background-color: var(--bg-card);
+  border-color: var(--border-focus);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.25);
+}
+
+.form-label {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.form-select {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.form-select:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 0.2rem rgba(124, 58, 237, 0.25);
+}
+
+/* ========================================
+   ALERTS
+   ======================================== */
+
+.alert-success {
+  background-color: rgba(251, 191, 36, 0.1);
+  border-color: var(--secondary-yellow);
+  color: var(--text-primary);
+}
+
+.alert-info {
+  background-color: rgba(124, 58, 237, 0.1);
+  border-color: var(--primary-purple);
+  color: var(--text-primary);
+}
+
+/* ========================================
+   BACKGROUND UTILITIES
+   ======================================== */
+
+.bg-light {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.bg-gradient {
+  background: linear-gradient(135deg, var(--primary-purple-light) 0%, var(--secondary-yellow-light) 100%) !important;
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-dark) 100%) !important;
+}
+
+/* ========================================
+   TEXT UTILITIES
+   ======================================== */
+
+.text-primary {
+  color: var(--primary-purple) !important;
+}
+
+.text-muted {
+  color: var(--text-secondary) !important;
+}
+
+.text-dark {
+  color: var(--text-primary) !important;
+}
+
+/* ========================================
+   HERO SECTION
+   ======================================== */
+
+.hero-section {
+  background: linear-gradient(135deg, 
+    rgba(124, 58, 237, 0.1) 0%, 
+    rgba(251, 191, 36, 0.1) 100%);
+  border-radius: 1rem;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+/* Standard Footer for all pages except Home */
+.footer-standard {
+  background-color: #f8f9fa;
+  border-top: 3px solid var(--primary-purple);
+}
+
+.footer-standard .footer-title {
+  color: var(--primary-purple);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.footer-standard .footer-text {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.footer-standard .footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.footer-standard .footer-links a:hover {
+  color: var(--primary-purple);
+  transform: translateX(5px);
+}
+
+.footer-standard .footer-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.footer-standard .footer-link:hover {
+  color: var(--primary-purple);
+}
+
+.footer-standard .footer-divider {
+  border-color: var(--border-color);
+  opacity: 0.5;
+}
+
+.footer-standard .footer-copyright {
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+}
+
+/* Cosmic Footer for Home Page */
+.footer-cosmic {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.footer-cosmic .footer-title {
+  color: #7c3aed !important;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.footer-cosmic .footer-text {
+  color: #1f2937 !important;
+  line-height: 1.6;
+}
+
+.footer-cosmic .footer-links a {
+  color: #7c3aed !important;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.footer-cosmic .footer-links a:hover {
+  color: #8b5cf6 !important;
+  transform: translateX(5px);
+}
+
+.footer-cosmic .footer-link {
+  color: #7c3aed !important;
+  text-decoration: none;
+}
+
+.footer-cosmic .footer-link:hover {
+  color: #8b5cf6 !important;
+}
+
+.footer-cosmic .footer-divider {
+  border-color: rgba(124, 58, 237, 0.3) !important;
+}
+
+.footer-cosmic .footer-copyright {
+  color: #7c3aed !important;
+  font-size: 0.9rem;
+}
+
+
+/* ========================================
+   STATISTICS CARDS
+   ======================================== */
+
+.card.bg-primary {
+  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-dark) 100%) !important;
+}
+
+.card.bg-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+}
+
+.card.bg-warning {
+  background: linear-gradient(135deg, var(--secondary-yellow) 0%, var(--secondary-yellow-dark) 100%) !important;
+}
+
+.card.bg-info {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+  .card {
+    border-radius: 8px;
+  }
+  
+  .btn {
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* ========================================
+   UTILITY CLASSES - Thêm mới
+   ======================================== */
+
+/* Glassmorphism effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+/* Interactive elements */
+.interactive {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Smooth reveal animation */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal {
+  animation: reveal 0.6s ease-out;
+}
+
+/* Badge improvements */
+.badge {
+  padding: 0.5em 0.85em;
+  font-weight: 600;
+  border-radius: 6px;
+  font-size: 0.875em;
+}
+
+/* Smooth transitions for all interactive elements */
+button, a, .card, input, select, textarea {
+  transition: all 0.2s ease;
+}
+
+/* Focus states - Better accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--primary-purple);
+  outline-offset: 2px;
+}
+
+/* Loading spinner */
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--primary-purple);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Hover zoom effect for images */
+.zoom-on-hover {
+  overflow: hidden;
+}
+
+.zoom-on-hover img {
+  transition: transform 0.4s ease;
+}
+
+.zoom-on-hover:hover img {
+  transform: scale(1.1);
+}
+
+/* ========================================
+   GRADE TABS - Tabs Lớp 1-5 đẹp hơn
+   ======================================== */
+
+.grade-tabs-container {
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.grade-tabs {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.grade-tab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  padding: 1.25rem 1.5rem;
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+
+.grade-tab i {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.grade-label {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.grade-number {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  background: var(--primary-purple);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+}
+
+/* Grade colors */
+.grade-tab.grade-1 { border-color: #ef4444; }
+.grade-tab.grade-1 i { color: #ef4444; }
+.grade-tab.grade-1.active { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-color: #ef4444; }
+
+.grade-tab.grade-2 { border-color: #f59e0b; }
+.grade-tab.grade-2 i { color: #f59e0b; }
+.grade-tab.grade-2.active { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #f59e0b; }
+
+.grade-tab.grade-3 { border-color: #10b981; }
+.grade-tab.grade-3 i { color: #10b981; }
+.grade-tab.grade-3.active { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-color: #10b981; }
+
+.grade-tab.grade-4 { border-color: #3b82f6; }
+.grade-tab.grade-4 i { color: #3b82f6; }
+.grade-tab.grade-4.active { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-color: #3b82f6; }
+
+.grade-tab.grade-5 { border-color: #8b5cf6; }
+.grade-tab.grade-5 i { color: #8b5cf6; }
+.grade-tab.grade-5.active { background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); border-color: #8b5cf6; }
+
+/* Active state - Tất cả */
+.grade-tab.active {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.grade-tab.active:not(.grade-1):not(.grade-2):not(.grade-3):not(.grade-4):not(.grade-5) {
+  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-dark) 100%);
+  color: var(--text-on-purple);
+  border-color: var(--primary-purple);
+}
+
+.grade-tab.active:not(.grade-1):not(.grade-2):not(.grade-3):not(.grade-4):not(.grade-5) i {
+  color: var(--text-on-purple);
+}
+
+
+/* Hover states */
+.grade-tab:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.grade-tab:hover i {
+  transform: scale(1.15);
+}
+
+.grade-tab:active {
+  transform: translateY(0);
+}
+
+/* ========================================
+   NAVBAR ACTIVE STATE
+   ======================================== */
+
+.navbar .nav-link.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  font-weight: 600;
+  position: relative;
+}
+
+.navbar .nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40%;
+  height: 3px;
+  background: var(--secondary-yellow);
+  border-radius: 3px 3px 0 0;
+}
+
+
+/* Responsive grade tabs */
+@media (max-width: 768px) {
+  .grade-tabs {
+    gap: 0.75rem;
+  }
+  
+  .grade-tab {
+    min-width: 90px;
+    padding: 1rem 1.25rem;
+  }
+  
+  .grade-tab i {
+    font-size: 1.5rem;
+  }
+  
+  .grade-label {
+    font-size: 0.75rem;
+  }
+}
+
+/* ========================================
+   ANIMATED HERO SECTION - Nền động cho học sinh
+   ======================================== */
+
+.hero-section-animated {
+  position: relative;
+  min-height: 500px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  margin-bottom: 3rem;
+}
+
+.hero-bg-animated {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Animated stars */
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20% 30%, white, transparent),
+    radial-gradient(2px 2px at 60% 70%, white, transparent),
+    radial-gradient(1px 1px at 50% 50%, white, transparent),
+    radial-gradient(1px 1px at 80% 10%, white, transparent),
+    radial-gradient(2px 2px at 90% 60%, white, transparent);
+  background-size: 200% 200%;
+  animation: twinkle 8s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Floating planets */
+.planets {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.planet {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: float 15s ease-in-out infinite;
+}
+
+.planet-1 {
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle at 30% 30%, #fbbf24, #f59e0b);
+  top: 10%;
+  left: 10%;
+  animation-duration: 20s;
+}
+
+.planet-2 {
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle at 30% 30%, #a78bfa, #8b5cf6);
+  top: 60%;
+  right: 15%;
+  animation-duration: 25s;
+  animation-delay: 2s;
+}
+
+.planet-3 {
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle at 30% 30%, #fde68a, #fbbf24);
+  bottom: 15%;
+  left: 70%;
+  animation-duration: 30s;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px) rotate(90deg);
+  }
+  50% {
+    transform: translateY(-10px) translateX(-10px) rotate(180deg);
+  }
+  75% {
+    transform: translateY(10px) translateX(15px) rotate(270deg);
+  }
+}
+
+/* Floating shapes */
+.floating-shapes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.shape {
+  position: absolute;
+  opacity: 0.15;
+  animation: floatShape 10s ease-in-out infinite;
+}
+
+/* Generate random positions and shapes */
+.shape-0 { width: 30px; height: 30px; background: #fbbf24; border-radius: 50%; top: 20%; left: 30%; animation-delay: 0s; }
+.shape-1 { width: 20px; height: 20px; background: #8b5cf6; border-radius: 30%; top: 40%; left: 70%; animation-delay: 1s; }
+.shape-2 { width: 25px; height: 25px; background: #f59e0b; clip-path: polygon(50% 0%, 100% 100%, 0% 100%); top: 60%; left: 20%; animation-delay: 2s; }
+.shape-3 { width: 35px; height: 35px; background: #a78bfa; border-radius: 50%; top: 80%; left: 80%; animation-delay: 3s; }
+.shape-4 { width: 22px; height: 22px; background: #fde68a; transform: rotate(45deg); top: 15%; left: 60%; animation-delay: 1.5s; }
+.shape-5 { width: 28px; height: 28px; background: #c4b5fd; border-radius: 50%; top: 35%; left: 85%; animation-delay: 2.5s; }
+.shape-6 { width: 18px; height: 18px; background: #fbbf24; clip-path: polygon(50% 0%, 100% 100%, 0% 100%); top: 55%; left: 45%; animation-delay: 0.5s; }
+.shape-7 { width: 32px; height: 32px; background: #8b5cf6; border-radius: 30%; top: 25%; left: 50%; animation-delay: 3.5s; }
+.shape-8 { width: 26px; height: 26px; background: #f59e0b; border-radius: 50%; top: 70%; left: 10%; animation-delay: 1.2s; }
+.shape-9 { width: 24px; height: 24px; background: #fde68a; transform: rotate(45deg); top: 45%; left: 40%; animation-delay: 2.8s; }
+.shape-10 { width: 20px; height: 20px; background: #a78bfa; clip-path: polygon(50% 0%, 100% 100%, 0% 100%); top: 85%; left: 55%; animation-delay: 0.8s; }
+.shape-11 { width: 30px; height: 30px; background: #fbbf24; border-radius: 50%; top: 10%; left: 75%; animation-delay: 3.2s; }
+.shape-12 { width: 28px; height: 28px; background: #c4b5fd; border-radius: 30%; top: 50%; left: 90%; animation-delay: 1.8s; }
+.shape-13 { width: 22px; height: 22px; background: #8b5cf6; transform: rotate(45deg); top: 75%; left: 65%; animation-delay: 2.2s; }
+.shape-14 { width: 26px; height: 26px; background: #f59e0b; border-radius: 50%; top: 30%; left: 15%; animation-delay: 3.8s; }
+
+@keyframes floatShape {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-30px) rotate(180deg);
+  }
+}
+
+/* Hero content */
+.hero-content {
+  position: relative;
+  z-index: 10;
+  color: white;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  text-shadow: 2px 2px 20px rgba(0,0,0,0.3);
+  animation: fadeInDown 1s ease-out;
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #ffffff, #fde68a, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.pulse-icon {
+  animation: pulse 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.hero-subtitle {
+  font-size: 1.3rem;
+  text-shadow: 1px 1px 10px rgba(0,0,0,0.2);
+  animation: fadeInUp 1s ease-out 0.3s backwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hero buttons */
+.btn-hero {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border: none;
+  color: #1f2937;
+  font-weight: 700;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  box-shadow: 0 10px 30px rgba(251, 191, 36, 0.4);
+  transition: all 0.3s ease;
+}
+
+.btn-hero:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(251, 191, 36, 0.6);
+  background: linear-gradient(135deg, #fcd34d, #fbbf24);
+  color: #1f2937;
+}
+
+.btn-hero-outline {
+  background: transparent;
+  border: 3px solid white;
+  color: white;
+  font-weight: 700;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.btn-hero-outline:hover {
+  background: white;
+  color: #8b5cf6;
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.4);
+}
+
+/* Initial bounce animation on page load only */
+.btn-hero-animated {
+  animation: initialBounce 1s ease-out 0.8s backwards;
+}
+
+.btn-hero-animated-outline {
+  animation: initialBounce 1s ease-out 1s backwards;
+}
+
+@keyframes initialBounce {
+  0% { 
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  60% {
+    transform: translateY(-10px) scale(1.05);
+  }
+  80% {
+    transform: translateY(5px) scale(0.98);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive hero */
+@media (max-width: 768px) {
+  .hero-section-animated {
+    min-height: 400px;
+  }
+  
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .planet-1, .planet-2, .planet-3 {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* ========================================
+   IMPROVED GRADE TABS - Đơn giản & đẹp
+   ======================================== */
+
+.grade-tabs-container {
+  background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+}
+
+.grade-tabs {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.grade-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 100px;
+  padding: 0.875rem 1.5rem;
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+}
+
+.grade-tab i {
+  font-size: 1.3rem;
+  transition: all 0.3s ease;
+}
+
+.grade-label {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+
+/* Grade colors - Đơn giản & rõ ràng */
+.grade-tab.grade-1 i { color: #ef4444; }
+.grade-tab.grade-2 i { color: #f59e0b; }
+.grade-tab.grade-3 i { color: #10b981; }
+.grade-tab.grade-4 i { color: #3b82f6; }
+.grade-tab.grade-5 i { color: #8b5cf6; }
+
+/* Active state - Đơn giản nhưng rõ ràng */
+.grade-tab.active {
+  background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-dark));
+  color: white;
+  border-color: var(--primary-purple);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+}
+
+.grade-tab.active i {
+  color: white;
+}
+
+.grade-tab.grade-1.active {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-color: #ef4444;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+}
+
+.grade-tab.grade-2.active {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-color: #f59e0b;
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+}
+
+.grade-tab.grade-3.active {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-color: #10b981;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.grade-tab.grade-4.active {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-color: #3b82f6;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+.grade-tab.grade-5.active {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  border-color: #8b5cf6;
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+}
+
+.grade-tab.active .grade-number {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Hover states - Nhẹ nhàng */
+.grade-tab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.2);
+  border-color: var(--primary-purple-light);
+}
+
+.grade-tab:hover i {
+  transform: scale(1.15);
+}
+
+.grade-tab.active:hover {
+  transform: translateY(-5px);
+}
+
+/* Responsive tabs */
+@media (max-width: 768px) {
+  .grade-tabs {
+    gap: 0.5rem;
+  }
+  
+  .grade-tab {
+    min-width: 80px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  .grade-tab i {
+    font-size: 1.1rem;
+  }
+}
+
+/* ========================================
+   ANIMATED FEATURE CARDS - Trang chủ
+   ======================================== */
+
+.card-animated {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-bg-animated {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+/* Card Video - Purple waves */
+.card-video .card-bg-animated {
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.15), transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(167, 139, 250, 0.15), transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(196, 181, 253, 0.1), transparent 70%);
+  animation: waveMove 8s ease-in-out infinite;
+}
+
+/* Card Game - Green bubbles */
+.card-game .card-bg-animated {
+  background: 
+    radial-gradient(circle at 30% 70%, rgba(16, 185, 129, 0.15), transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(5, 150, 105, 0.15), transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(167, 243, 208, 0.1), transparent 70%);
+  animation: bubbleMove 10s ease-in-out infinite;
+}
+
+/* Card Trophy - Yellow sparkle */
+.card-trophy .card-bg-animated {
+  background: 
+    radial-gradient(circle at 25% 75%, rgba(245, 158, 11, 0.15), transparent 50%),
+    radial-gradient(circle at 75% 25%, rgba(251, 191, 36, 0.15), transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(253, 230, 138, 0.1), transparent 70%);
+  animation: sparkleMove 7s ease-in-out infinite;
+}
+
+@keyframes waveMove {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+  }
+  50% {
+    background-position: 100% 100%, 0% 0%, 60% 40%;
+  }
+}
+
+@keyframes bubbleMove {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+    background-size: 150% 150%, 150% 150%, 200% 200%;
+  }
+  50% {
+    background-position: 100% 100%, 0% 0%, 40% 60%;
+    background-size: 200% 200%, 200% 200%, 150% 150%;
+  }
+}
+
+@keyframes sparkleMove {
+  0%, 100% {
+    background-position: 0% 0%, 100% 100%, 50% 50%;
+    transform: rotate(0deg);
+  }
+  50% {
+    background-position: 100% 100%, 0% 0%, 55% 45%;
+    transform: rotate(5deg);
+  }
+}
+
+/* Show bg on hover */
+.card-animated:hover .card-bg-animated {
+  opacity: 1;
+}
+
+/* Icon bounce on card hover */
+.icon-bounce {
+  transition: transform 0.3s ease;
+}
+
+.card-animated:hover .icon-bounce {
+  animation: iconBounce 0.8s ease-in-out;
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  25% { transform: translateY(-10px) scale(1.1); }
+  50% { transform: translateY(0) scale(1.05); }
+  75% { transform: translateY(-5px) scale(1.08); }
+}
+
+/* Card hover effects */
+.card-animated:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2) !important;
+}
+
+.card-video:hover {
+  border: 2px solid rgba(139, 92, 246, 0.3);
+}
+
+.card-game:hover {
+  border: 2px solid rgba(16, 185, 129, 0.3);
+}
+
+.card-trophy:hover {
+  border: 2px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Sparkle particles on hover */
+.card-animated::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: all 0.6s ease;
+}
+
+.card-animated:hover::before {
+  width: 300px;
+  height: 300px;
+  opacity: 0.15;
+}
+
+/* Content fade in animation on page load */
+.card-animated {
+  animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.card-animated:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.card-animated:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.card-animated:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+
+/* ========================================
+   GLOBAL BORDER RADIUS - Thân thiện hơn
+   ======================================== */
+
+/* Tables */
+.table-responsive {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+table.table {
+  border-radius: 8px;
+}
+
+table thead th:first-child {
+  border-top-left-radius: 8px;
+}
+
+table thead th:last-child {
+  border-top-right-radius: 8px;
+}
+
+/* Alerts */
+.alert {
+  border-radius: 12px;
+}
+
+/* Modals */
+.modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.modal-header {
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.modal-footer {
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+/* Dropdown */
+.dropdown-menu {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Navbar */
+.navbar {
+  border-radius: 0; /* Keep navbar full width */
+}
+
+/* Input groups */
+.input-group {
+  border-radius: 8px;
+}
+
+.input-group .form-control:first-child,
+.input-group-text:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.input-group .form-control:last-child,
+.input-group-text:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* List group */
+.list-group {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.list-group-item:first-child {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.list-group-item:last-child {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* Pagination */
+.pagination {
+  border-radius: 8px;
+}
+
+.page-link {
+  border-radius: 6px;
+  margin: 0 2px;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  border-radius: 8px;
+}
+
+/* Nav tabs */
+.nav-tabs {
+  border-radius: 8px 8px 0 0;
+}
+
+.nav-tabs .nav-link {
+  border-radius: 8px 8px 0 0;
+}
+
+/* Nav pills */
+.nav-pills .nav-link {
+  border-radius: 8px;
+}
+
+/* Progress bars */
+.progress {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Toasts */
+.toast {
+  border-radius: 12px;
+}
+
+/* Offcanvas */
+.offcanvas {
+  border-radius: 0; /* Full height sidebar */
+}
+
+/* Image thumbnails */
+.img-thumbnail {
+  border-radius: 12px;
+}
+
+/* Form controls */
+.form-control,
+.form-select {
+  border-radius: 8px;
+}
+
+/* Badges */
+.badge {
+  border-radius: 6px;
+}
+
+/* Code blocks */
+pre {
+  border-radius: 8px;
+}
+
+code {
+  border-radius: 4px;
+}
+
+/* Carousel */
+.carousel-inner {
+  border-radius: 12px;
+  overflow: hidden;
+}
+

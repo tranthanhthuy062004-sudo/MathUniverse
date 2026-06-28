@@ -1,0 +1,751 @@
+﻿@model MathUniverse.Models.ViewModels.CreateExerciseViewModel
+@{
+    ViewData["Title"] = "Tạo bài tập mới";
+}
+
+<style>
+    .create-exercise-container {
+        background: linear-gradient(180deg, #e0f2fe 0%, #ddd6fe 50%, #fce7f3 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+
+    .exercise-header {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(99, 102, 241, 0.15) 100%);
+        backdrop-filter: blur(15px);
+        border: 3px solid rgba(59, 130, 246, 0.3);
+        border-radius: 25px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .exercise-title {
+        font-size: 2rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    .lesson-info {
+        font-size: 1.2rem;
+        color: #374151;
+        font-weight: 600;
+    }
+
+    .form-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(15px);
+        border: 3px solid rgba(59, 130, 246, 0.2);
+        border-radius: 25px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 40px rgba(59, 130, 246, 0.15);
+    }
+
+    .form-card h4 {
+        color: #1f2937;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        border-bottom: 3px solid #3b82f6;
+        padding-bottom: 0.5rem;
+    }
+
+    .form-label {
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #d1d5db;
+        border-radius: 12px;
+        padding: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .question-card {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+        border: 2px solid #93c5fd;
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .question-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .question-number {
+        background: linear-gradient(135deg, #3b82f6, #6366f1);
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 900;
+    }
+
+    .answer-item {
+        background: white;
+        border: 2px solid #d1d5db;
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .answer-item:hover {
+        border-color: #3b82f6;
+        box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2);
+    }
+
+    .answer-letter {
+        background: linear-gradient(135deg, #3b82f6, #6366f1);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        margin-right: 1rem;
+    }
+
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary-custom:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-success-custom {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        color: white;
+        padding: 1rem 3rem;
+        font-size: 1.3rem;
+        font-weight: 900;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-success-custom:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-danger-custom {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        border: none;
+        color: white;
+        padding: 0.5rem 1.5rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        border-radius: 10px;
+    }
+</style>
+
+<div class="create-exercise-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="exercise-header">
+            <div class="exercise-title">
+                <i class="fas fa-tasks"></i> @(ViewBag.ExerciseId != null ? "Chỉnh Sửa Bài Tập" : "Tạo Bài Tập Mới")
+            </div>
+            <div class="lesson-info">
+                <i class="fas fa-book"></i> @ViewBag.LessonTitle
+            </div>
+        </div>
+
+        <form asp-action="@(ViewBag.ExerciseId != null ? "EditExercise" : "CreateExercise")" 
+              asp-route-id="@ViewBag.ExerciseId" 
+              method="post" 
+              id="exercise-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="LessonId" />
+
+            <!-- Validation Summary -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <h5><i class="fas fa-exclamation-triangle"></i> Có lỗi xảy ra:</h5>
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Basic Information -->
+            <div class="form-card">
+                <h4><i class="fas fa-info-circle"></i> Thông tin cơ bản</h4>
+                
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label asp-for="Title" class="form-label">Tiêu đề bài tập</label>
+                        <input asp-for="Title" class="form-control" placeholder="VD: Luyện tập về số thập phân" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label asp-for="Description" class="form-label">Mô tả</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Mô tả ngắn về bài tập..."></textarea>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="MaxAttempts" class="form-label">Số lần thử tối đa</label>
+                        <input asp-for="MaxAttempts" type="number" class="form-control" min="1" max="10" value="3" />
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="PassingScore" class="form-label">Điểm đạt (0-10)</label>
+                        <input asp-for="PassingScore" type="number" class="form-control" min="0" max="10" step="0.5" value="7" />
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="TimeLimit" class="form-label">Thời gian (phút, 0=không giới hạn)</label>
+                        <input asp-for="TimeLimit" type="number" class="form-control" min="0" value="0" />
+                    </div>
+                </div>
+                
+                <!-- Hidden fields với giá trị mặc định -->
+                <input type="hidden" asp-for="Type" value="1" />
+                <input type="hidden" asp-for="Difficulty" value="1" />
+                <input type="hidden" asp-for="OrderIndex" value="0" />
+            </div>
+
+            <!-- Questions Section -->
+            <div class="form-card">
+                <h4><i class="fas fa-question-circle"></i> Câu hỏi</h4>
+                <div id="questions-container">
+                    <!-- Questions will be added here dynamically -->
+                </div>
+                <button type="button" class="btn btn-primary-custom" onclick="addQuestion()">
+                    <i class="fas fa-plus"></i> Thêm câu hỏi
+                </button>
+            </div>
+
+            <!-- Submit Section -->
+            <div class="text-center">
+                <a href="@Url.Action("Exercises", "Admin", new { lessonId = Model.LessonId })" class="btn btn-secondary" style="padding: 1rem 2rem; font-size: 1.1rem; border-radius: 15px; margin-right: 1rem;">
+                    <i class="fas fa-times"></i> Hủy
+                </a>
+                <button type="submit" class="btn-success-custom">
+                    <i class="fas fa-save"></i> Lưu bài tập
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        console.log('CreateExercise script loaded');
+        let questionCount = 0;
+        const letters = ['A', 'B', 'C', 'D'];
+
+        function addQuestion() {
+            const container = document.getElementById('questions-container');
+            // Tính số câu hỏi thực tế hiện có
+            const actualQuestionCount = container.querySelectorAll('.question-card').length;
+            questionCount = actualQuestionCount + 1;
+            
+            const questionHtml = `
+                <div class="question-card" id="question-${questionCount}">
+                    <div class="question-header">
+                        <div class="question-number">${questionCount}</div>
+                        <button type="button" class="btn-danger-custom" onclick="removeQuestion(${questionCount})">
+                            <i class="fas fa-trash"></i> Xóa câu hỏi
+                        </button>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Loại câu hỏi</label>
+                        <select class="form-select" id="question-type-${questionCount}" onchange="toggleQuestionType(${questionCount})">
+                            <option value="1">Trắc nghiệm (4 đáp án)</option>
+                            <option value="2">Tự luận (điền câu trả lời)</option>
+                        </select>
+                        <input type="hidden" name="Questions[${actualQuestionCount}].Type" id="question-type-hidden-${questionCount}" value="1" />
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Nội dung câu hỏi</label>
+                        <textarea name="Questions[${actualQuestionCount}].QuestionText" class="form-control" rows="2" required></textarea>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label">Hình ảnh câu hỏi (tùy chọn)</label>
+                            <div class="d-flex gap-2">
+                                <input type="text" name="Questions[${actualQuestionCount}].ImageUrl" 
+                                       id="imageUrl-${questionCount}" 
+                                       class="form-control" 
+                                       placeholder="URL hình ảnh hoặc upload file..." 
+                                       readonly />
+                                <button type="button" class="btn btn-primary" onclick="openImageUpload(${questionCount})">
+                                    <i class="fas fa-upload"></i> Upload
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="clearImage(${questionCount})">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <input type="file" id="imageFile-${questionCount}" accept="image/*" style="display: none;" onchange="uploadImage(${questionCount})" />
+                            <div id="imagePreview-${questionCount}" class="mt-2" style="display: none;">
+                                <img id="previewImg-${questionCount}" src="" alt="Preview câu hỏi" style="max-width: 200px; max-height: 150px; border-radius: 8px;" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Điểm</label>
+                            <input type="number" name="Questions[${actualQuestionCount}].Points" class="form-control" value="1" min="1" max="10" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Thứ tự</label>
+                            <input type="number" name="Questions[${actualQuestionCount}].OrderIndex" class="form-control" value="${actualQuestionCount}" />
+                        </div>
+                    </div>
+                    
+                    <!-- Multiple Choice Section -->
+                    <div id="multiple-choice-section-${questionCount}">
+                        <h6 style="font-weight: 700; color: #374151; margin-bottom: 1rem;">
+                            <i class="fas fa-check-circle"></i> Đáp án trắc nghiệm (chọn đáp án đúng)
+                        </h6>
+                        
+                        <div id="answers-container-${questionCount}">
+                            ${generateAnswersHtml(actualQuestionCount, 4)}
+                        </div>
+                    </div>
+                    
+                    <!-- Essay Section -->
+                    <div id="essay-section-${questionCount}" style="display: none;">
+                        <h6 style="font-weight: 700; color: #374151; margin-bottom: 1rem;">
+                            <i class="fas fa-edit"></i> Câu trả lời tự luận
+                        </h6>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Với câu hỏi tự luận, học sinh sẽ nhập câu trả lời và admin sẽ chấm điểm sau.
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', questionHtml);
+        }
+
+        function toggleQuestionType(questionId) {
+            const selectElement = document.getElementById(`question-type-${questionId}`);
+            const hiddenInput = document.getElementById(`question-type-hidden-${questionId}`);
+            const multipleChoiceSection = document.getElementById(`multiple-choice-section-${questionId}`);
+            const essaySection = document.getElementById(`essay-section-${questionId}`);
+            
+            const selectedType = selectElement.value;
+            hiddenInput.value = selectedType;
+            
+            if (selectedType === '1') {
+                // Trắc nghiệm (MultipleChoice = 1)
+                multipleChoiceSection.style.display = 'block';
+                essaySection.style.display = 'none';
+
+                // Enable inputs in multiple choice section
+                const inputs = multipleChoiceSection.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => input.disabled = false);
+
+            } else {
+                // Tự luận (Essay = 2)
+                multipleChoiceSection.style.display = 'none';
+                essaySection.style.display = 'block';
+
+                // Disable inputs in multiple choice section so they are not submitted
+                const inputs = multipleChoiceSection.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => input.disabled = true);
+            }
+        }
+
+        function generateAnswersHtml(questionIndex, count) {
+            let html = '';
+            for (let i = 0; i < count; i++) {
+                html += `
+                    <div class="answer-item">
+                        <div class="d-flex align-items-center">
+                            <span class="answer-letter">${letters[i]}</span>
+                            <div class="flex-grow-1">
+                                <input type="text" name="Questions[${questionIndex}].Answers[${i}].AnswerText" 
+                                       class="form-control answer-input-${questionIndex}" placeholder="Nhập đáp án ${letters[i]}" />
+                                <input type="hidden" name="Questions[${questionIndex}].Answers[${i}].OrderIndex" value="${i}" />
+                            </div>
+                            <div class="form-check ms-3">
+                                <input type="radio" name="Questions[${questionIndex}].CorrectAnswer" 
+                                       value="${i}" id="correct-${questionIndex}-${i}" 
+                                       class="form-check-input answer-radio-${questionIndex}" 
+                                       onchange="setCorrectAnswer(${questionIndex}, ${i})" />
+                                <label class="form-check-label" for="correct-${questionIndex}-${i}">
+                                    Đúng
+                                </label>
+                            </div>
+                        </div>
+                        <input type="hidden" name="Questions[${questionIndex}].Answers[${i}].IsCorrect" 
+                               id="is-correct-${questionIndex}-${i}" value="false" />
+                    </div>
+                `;
+            }
+            return html;
+        }
+
+        function setCorrectAnswer(questionIndex, answerIndex) {
+            // Reset all answers for this question
+            for (let i = 0; i < 4; i++) {
+                const elem = document.getElementById(`is-correct-${questionIndex}-${i}`);
+                if (elem) elem.value = 'false';
+            }
+            // Set selected answer as correct
+            const elem = document.getElementById(`is-correct-${questionIndex}-${answerIndex}`);
+            if (elem) elem.value = 'true';
+        }
+
+        function removeQuestion(id) {
+            if (confirm('Bạn có chắc muốn xóa câu hỏi này?')) {
+                document.getElementById(`question-${id}`).remove();
+                // Cập nhật lại số thứ tự hiển thị và name attributes cho tất cả câu hỏi còn lại
+                reindexQuestions();
+            }
+        }
+
+        function reindexQuestions() {
+            const questions = document.querySelectorAll('.question-card');
+            questions.forEach((question, index) => {
+                // Cập nhật số thứ tự hiển thị
+                const numberDiv = question.querySelector('.question-number');
+                if (numberDiv) {
+                    numberDiv.textContent = index + 1;
+                }
+                
+                // Cập nhật tất cả name attributes để có index đúng
+                question.querySelectorAll('input, select, textarea').forEach(input => {
+                    if (input.name && input.name.startsWith('Questions[')) {
+                        input.name = input.name.replace(/Questions\[\d+\]/, `Questions[${index}]`);
+                    }
+                });
+            });
+        }
+
+        function updateQuestionNumbers() {
+            const questions = document.querySelectorAll('.question-card');
+            questions.forEach((question, index) => {
+                // Cập nhật số thứ tự hiển thị
+                const numberDiv = question.querySelector('.question-number');
+                if (numberDiv) {
+                    numberDiv.textContent = index + 1;
+                }
+            });
+        }
+
+        // Load existing questions data (for Edit mode)
+        const existingQuestions = @Html.Raw(Json.Serialize(Model.Questions?.Select(q => new {
+            questionText = q.QuestionText,
+            imageUrl = q.ImageUrl ?? "",
+            points = q.Points,
+            orderIndex = q.OrderIndex,
+            answers = q.Answers.Select(a => new {
+                answerText = a.AnswerText,
+                isCorrect = a.IsCorrect,
+                orderIndex = a.OrderIndex
+            }).ToArray()
+        }).ToArray() ?? Array.Empty<object>()));
+
+        // Function to load existing questions
+        function loadExistingQuestions() {
+            existingQuestions.forEach((qData) => {
+                questionCount++;
+                const qIndex = questionCount - 1;
+                
+                // Xác định loại câu hỏi (nếu không có answers hoặc tất cả answers rỗng = tự luận)
+                const isEssay = !qData.answers || qData.answers.length === 0 || 
+                               qData.answers.every(a => !a.answerText || a.answerText.trim() === '');
+                const questionType = isEssay ? '2' : '1';  // Essay = 2, MultipleChoice = 1
+                
+                let answersHtml = '';
+                for (let i = 0; i < 4; i++) {
+                    const answer = qData.answers[i] || { answerText: '', isCorrect: false };
+                    const letter = letters[i];
+                    const isChecked = answer.isCorrect ? 'checked' : '';
+                    const correctValue = answer.isCorrect ? 'true' : 'false';
+                    
+                    answersHtml += `
+                        <div class="answer-item">
+                            <div class="d-flex align-items-center">
+                                <span class="answer-letter">${letter}</span>
+                                <div class="flex-grow-1">
+                                    <input type="text" name="Questions[${qIndex}].Answers[${i}].AnswerText" 
+                                           class="form-control" value="${answer.answerText || ''}" placeholder="Nhập đáp án ${letter}" />
+                                    <input type="hidden" name="Questions[${qIndex}].Answers[${i}].OrderIndex" value="${i}" />
+                                </div>
+                                <div class="form-check ms-3">
+                                    <input type="radio" name="Questions[${qIndex}].CorrectAnswer" 
+                                           value="${i}" id="correct-${qIndex}-${i}" 
+                                           class="form-check-input" ${isChecked}
+                                           onchange="setCorrectAnswer(${qIndex}, ${i})" />
+                                    <label class="form-check-label" for="correct-${qIndex}-${i}">
+                                        Đúng
+                                    </label>
+                                </div>
+                            </div>
+                            <input type="hidden" name="Questions[${qIndex}].Answers[${i}].IsCorrect" 
+                                   id="is-correct-${qIndex}-${i}" value="${correctValue}" />
+                        </div>
+                    `;
+                }
+                
+                const questionHtml = `
+                    <div class="question-card" id="question-${questionCount}">
+                        <div class="question-header">
+                            <div class="question-number">${questionCount}</div>
+                            <button type="button" class="btn-danger-custom" onclick="removeQuestion(${questionCount})">
+                                <i class="fas fa-trash"></i> Xóa câu hỏi
+                            </button>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Loại câu hỏi</label>
+                            <select class="form-select" id="question-type-${questionCount}" onchange="toggleQuestionType(${questionCount})">
+                                <option value="1" ${questionType === '1' ? 'selected' : ''}>Trắc nghiệm (4 đáp án)</option>
+                                <option value="2" ${questionType === '2' ? 'selected' : ''}>Tự luận (điền câu trả lời)</option>
+                            </select>
+                            <input type="hidden" name="Questions[${qIndex}].Type" id="question-type-hidden-${questionCount}" value="${questionType}" />
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Nội dung câu hỏi</label>
+                            <textarea name="Questions[${qIndex}].QuestionText" class="form-control" rows="2" required>${qData.questionText}</textarea>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Hình ảnh câu hỏi (tùy chọn)</label>
+                                <div class="d-flex gap-2">
+                                    <input type="text" name="Questions[${qIndex}].ImageUrl" 
+                                           id="imageUrl-${questionCount}" 
+                                           class="form-control" 
+                                           value="${qData.imageUrl}" 
+                                           placeholder="URL hình ảnh hoặc upload file..." 
+                                           readonly />
+                                    <button type="button" class="btn btn-primary" onclick="openImageUpload(${questionCount})">
+                                        <i class="fas fa-upload"></i> Upload
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="clearImage(${questionCount})">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <input type="file" id="imageFile-${questionCount}" accept="image/*" style="display: none;" onchange="uploadImage(${questionCount})" />
+                                <div id="imagePreview-${questionCount}" class="mt-2" style="display: ${qData.imageUrl ? 'block' : 'none'};">
+                                    <img id="previewImg-${questionCount}" src="${qData.imageUrl}" alt="Hình ảnh câu hỏi" style="max-width: 200px; max-height: 150px; border-radius: 8px;" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Điểm</label>
+                                <input type="number" name="Questions[${qIndex}].Points" class="form-control" value="${qData.points}" min="1" max="10" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Thứ tự</label>
+                                <input type="number" name="Questions[${qIndex}].OrderIndex" class="form-control" value="${qData.orderIndex}" />
+                            </div>
+                        </div>
+                        
+                        <!-- Multiple Choice Section -->
+                        <div id="multiple-choice-section-${questionCount}" style="display: ${questionType === '1' ? 'block' : 'none'};">
+                            <h6 style="font-weight: 700; color: #374151; margin-bottom: 1rem;">
+                                <i class="fas fa-check-circle"></i> Đáp án trắc nghiệm (chọn đáp án đúng)
+                            </h6>
+                            
+                            <div id="answers-container-${questionCount}">
+                                ${answersHtml}
+                            </div>
+                        </div>
+                        
+                        <!-- Essay Section -->
+                        <div id="essay-section-${questionCount}" style="display: ${questionType === '2' ? 'block' : 'none'};">
+                            <h6 style="font-weight: 700; color: #374151; margin-bottom: 1rem;">
+                                <i class="fas fa-edit"></i> Câu trả lời tự luận
+                            </h6>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> Với câu hỏi tự luận, học sinh sẽ nhập câu trả lời (text + ảnh) và admin sẽ chấm điểm sau.
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('questions-container').insertAdjacentHTML('beforeend', questionHtml);
+            });
+        }
+
+        function reindexQuestions() {
+            const questions = document.querySelectorAll('.question-card');
+            questions.forEach((question, index) => {
+                // Cập nhật số thứ tự hiển thị
+                const numberDiv = question.querySelector('.question-number');
+                if (numberDiv) {
+                    numberDiv.textContent = index + 1;
+                }
+                
+                // Cập nhật name attributes để model binding hoạt động
+                const inputs = question.querySelectorAll('[name*="Questions["]');
+                inputs.forEach(input => {
+                    input.name = input.name.replace(/Questions\[\d+\]/, `Questions[${index}]`);
+                });
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - Initializing...');
+            const isEditMode = @(ViewBag.ExerciseId != null ? "true" : "false");
+            console.log('Edit mode:', isEditMode);
+            console.log('Existing questions count:', existingQuestions.length);
+            
+            if (isEditMode && existingQuestions.length > 0) {
+                // Load existing questions
+                console.log('Loading existing questions...');
+                loadExistingQuestions();
+            } else {
+                // Add first empty question for create mode
+                console.log('Adding first question...');
+                addQuestion();
+            }
+            
+            console.log('Initialization complete');
+            
+            // Form validation before submit - PHẢI Ở TRONG DOMContentLoaded
+            const exerciseForm = document.getElementById('exercise-form');
+            if (exerciseForm) {
+                console.log('Attaching form submit listener...');
+                exerciseForm.addEventListener('submit', function(e) {
+                    console.log('========== Form Submit Event ==========');
+                    console.log('Form submitting...');
+                    
+                    const actualQuestionCount = document.querySelectorAll('.question-card').length;
+                    console.log('Question count:', actualQuestionCount);
+                    
+                    if (actualQuestionCount === 0) {
+                        e.preventDefault();
+                        alert('Vui lòng thêm ít nhất 1 câu hỏi!');
+                        return false;
+                    }
+                    
+                    // Validate each multiple choice question has at least one correct answer
+                    const questions = document.querySelectorAll('.question-card');
+                    for (let i = 0; i < questions.length; i++) {
+                        const question = questions[i];
+                        const questionId = question.id.replace('question-', '');
+                        const questionTypeSelect = question.querySelector(`#question-type-${questionId}`);
+                        
+                        console.log(`Question ${i + 1} ID: ${questionId}, type:`, questionTypeSelect ? questionTypeSelect.value : 'N/A');
+                        
+                        // Chỉ validate đáp án đúng cho câu trắc nghiệm (type = 1)
+                        if (questionTypeSelect && questionTypeSelect.value === '1') {
+                            const multipleChoiceSection = question.querySelector(`#multiple-choice-section-${questionId}`);
+                            if (multipleChoiceSection && multipleChoiceSection.style.display !== 'none') {
+                                const checkedRadio = question.querySelector('input[type="radio"]:checked');
+                                console.log(`Question ${i + 1} has correct answer selected:`, !!checkedRadio);
+                                if (!checkedRadio) {
+                                    e.preventDefault();
+                                    alert(`Vui lòng chọn đáp án đúng cho câu hỏi trắc nghiệm số ${i + 1}!`);
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+
+                    // Re-index questions to ensure sequential binding
+                    console.log('Reindexing questions...');
+                    reindexQuestions();
+                    
+                    // Log form data for debugging
+                    console.log('Form data before submit:');
+                    const formData = new FormData(exerciseForm);
+                    for (let pair of formData.entries()) {
+                        console.log(`  ${pair[0]}: ${pair[1]}`);
+                    }
+                    
+                    console.log('Form validation passed, submitting...');
+                    console.log('======================================');
+                });
+            } else {
+                console.error('Exercise form not found!');
+            }
+        });
+
+        // Upload image functions
+        function openImageUpload(questionId) {
+            document.getElementById(`imageFile-${questionId}`).click();
+        }
+
+        async function uploadImage(questionId) {
+            const fileInput = document.getElementById(`imageFile-${questionId}`);
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('@Url.Action("UploadQuestionImage", "Admin")', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById(`imageUrl-${questionId}`).value = result.imageUrl;
+                    document.getElementById(`previewImg-${questionId}`).src = result.imageUrl;
+                    document.getElementById(`imagePreview-${questionId}`).style.display = 'block';
+                } else {
+                    alert('Lỗi: ' + result.message);
+                }
+            } catch (error) {
+                alert('Lỗi khi tải lên hình ảnh');
+                console.error(error);
+            }
+        }
+
+        function clearImage(questionId) {
+            document.getElementById(`imageUrl-${questionId}`).value = '';
+            document.getElementById(`imagePreview-${questionId}`).style.display = 'none';
+            document.getElementById(`imageFile-${questionId}`).value = '';
+        }
+    </script>
+}

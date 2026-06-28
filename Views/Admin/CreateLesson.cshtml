@@ -1,0 +1,118 @@
+﻿@model MathUniverse.Models.ViewModels.CreateLessonViewModel
+@{
+    ViewData["Title"] = "Tạo bài giảng mới";
+}
+
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold">
+            <i class="fas fa-plus-circle text-primary"></i> Tạo bài giảng mới
+        </h2>
+        <a asp-action="Lessons" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form asp-action="CreateLesson" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label asp-for="Title" class="form-label">Tiêu đề bài học <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control" placeholder="Ví dụ: Phép cộng trong phạm vi 100" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Grade" class="form-label">Lớp <span class="text-danger">*</span></label>
+                            <select asp-for="Grade" class="form-select">
+                                <option value="">Chọn lớp</option>
+                                <option value="1">Lớp 1</option>
+                                <option value="2">Lớp 2</option>
+                                <option value="3">Lớp 3</option>
+                                <option value="4">Lớp 4</option>
+                                <option value="5">Lớp 5</option>
+                            </select>
+                            <span asp-validation-for="Grade" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Topic" class="form-label">Chủ đề <span class="text-danger">*</span></label>
+                        <input asp-for="Topic" class="form-control" placeholder="Ví dụ: Số học, Hình học..." />
+                        <span asp-validation-for="Topic" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Mô tả ngắn</label>
+                        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> <strong>Lưu ý:</strong> Bạn cần cung cấp ít nhất một trong hai: Video YouTube hoặc File PDF
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="VideoUrl" class="form-label">
+                            <i class="fab fa-youtube text-danger"></i> Link Video YouTube (tùy chọn)
+                        </label>
+                        <input asp-for="VideoUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=..." />
+                        <small class="text-muted">Hỗ trợ: youtube.com/watch?v=..., youtu.be/..., hoặc embed URL</small>
+                        <span asp-validation-for="VideoUrl" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PdfFile" class="form-label">
+                            <i class="fas fa-file-pdf text-danger"></i> Hoặc tải lên File PDF (tùy chọn)
+                        </label>
+                        <input asp-for="PdfFile" class="form-control" type="file" accept=".pdf" />
+                        <small class="text-muted">Chỉ chấp nhận file PDF. Kích thước tối đa: 10MB</small>
+                        <span asp-validation-for="PdfFile" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ThumbnailUrl" class="form-label">Link ảnh bìa</label>
+                        <input asp-for="ThumbnailUrl" class="form-control" placeholder="https://..." />
+                        <span asp-validation-for="ThumbnailUrl" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TheoryContent" class="form-label">Nội dung lý thuyết (HTML)</label>
+                        <textarea asp-for="TheoryContent" class="form-control" rows="10"></textarea>
+                        <span asp-validation-for="TheoryContent" class="text-danger"></span>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="OrderIndex" class="form-label">Thứ tự hiển thị</label>
+                            <input asp-for="OrderIndex" class="form-control" type="number" />
+                            <span asp-validation-for="OrderIndex" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <div class="form-check form-switch mb-2">
+                                <input asp-for="IsPublished" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsPublished" class="form-check-label">Công khai bài học ngay</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Lưu bài giảng
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

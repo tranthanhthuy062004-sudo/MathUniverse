@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - Vũ trụ Toán học</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+</head>
+<body>
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
+        <div class="container-fluid">
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="navbar-brand text-white fw-bold" asp-area="" asp-controller="Admin" asp-action="Index">
+                    <i class="fas fa-rocket"></i> Vũ trụ Toán học (Giáo viên)
+                </a>
+            }
+            else
+            {
+                <a class="navbar-brand text-white fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-rocket"></i> Vũ trụ Toán học
+                </a>
+            }
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-white @(controller == "Admin" && action == "Index" ? "active" : "")" 
+                               asp-controller="Admin" asp-action="Index">
+                                <i class="fas fa-tachometer-alt"></i> Bảng điều khiển
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-white @(controller == "Home" && action == "Index" ? "active" : "")" 
+                               asp-controller="Home" asp-action="Index">
+                                <i class="fas fa-home"></i> Trang chủ
+                            </a>
+                        </li>
+                        @if (User.Identity?.IsAuthenticated != true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white @(controller == "Home" && action == "Browse" ? "active" : "")" 
+                                   asp-controller="Home" asp-action="Browse">
+                                    <i class="fas fa-book"></i> Khám phá
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link text-white @(controller == "Home" && action == "About" ? "active" : "")" 
+                               asp-controller="Home" asp-action="About">
+                                <i class="fas fa-info-circle"></i> Giới thiệu
+                            </a>
+                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white @(controller == "Student" && action == "Dashboard" ? "active" : "")" 
+                                   asp-controller="Student" asp-action="Dashboard">
+                                    <i class="fas fa-tachometer-alt"></i> Bảng điều khiển
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white @(controller == "Student" && action == "Lessons" ? "active" : "")" 
+                                   asp-controller="Student" asp-action="Lessons">
+                                    <i class="fas fa-graduation-cap"></i> Bài học
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+                <ul class="navbar-nav">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        @* Notification bell for all authenticated users except Admin *@
+                        @if (!User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item d-flex align-items-center">
+                                @await Component.InvokeAsync("NotificationBell")
+                            </li>
+                        }
+                        
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" id="navbarDropdown" 
+                               role="button" data-bs-toggle="dropdown">
+                                @await Component.InvokeAsync("UserAvatar")
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                @if (!User.IsInRole("Admin"))
+                                {
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Student" asp-action="Profile">
+                                            <i class="fas fa-user-cog"></i> Hồ sơ cá nhân
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                }
+                                <li>
+                                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-controller="Account" asp-action="Login">
+                                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-warning btn-sm ms-2" asp-controller="Account" asp-action="Register">
+                                <i class="fas fa-user-plus"></i> Đăng ký
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="container">
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="container">
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+}
+
+<div class="container">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+<footer class="footer @((controller == "Home" && action == "Index") ? "footer-cosmic" : "footer-standard") mt-5">
+    <div class="container py-4">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <h5 class="footer-title">
+                    Vũ trụ Toán học
+                </h5>
+                <p class="footer-text">Nền tảng học Toán trực tuyến dành cho học sinh Tiểu học</p>
+            </div>
+            <div class="col-md-4">
+                <h5 class="footer-title">Liên kết nhanh</h5>
+                <ul class="list-unstyled footer-links">
+                    <li class="mb-2">
+                        <a asp-controller="Home" asp-action="Index">
+                            Trang chủ
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a asp-controller="Home" asp-action="About">
+                            Giới thiệu
+                        </a>
+                    </li>
+                    @if (User.Identity?.IsAuthenticated != true)
+                    {
+                        <li class="mb-2">
+                            <a asp-controller="Home" asp-action="Browse">
+                                Khám phá bài học
+                            </a>
+                        </li>
+                    }
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="mb-2">
+                            <a asp-controller="Student" asp-action="Lessons">
+                                Bài học của tôi
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h5 class="footer-title">Liên hệ & Hỗ trợ</h5>
+                <p class="footer-text mb-2">
+                    <a href="mailto:INT2204N1nhom08@VuTruToanHoc.edu.vn" class="footer-link">
+                        INT2204N1nhom08@VuTruToanHoc.edu.vn
+                    </a>
+                </p>
+                <p class="footer-text small mb-0">
+                    Nhóm 08 - INT2204N1
+                </p>
+            </div>
+        </div>
+        <hr class="footer-divider my-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <p class="footer-copyright mb-0">
+                    &copy; 2026 Vũ trụ Toán học - Bản quyền thuộc về Nhóm 08 INT2204N1
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+<script>
+    // Auto-hide alerts after 3 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert.alert-dismissible');
+        alerts.forEach(function(alert) {
+            // Auto hide after 3 seconds (3000ms)
+            setTimeout(function() {
+                // Use Bootstrap's fade out
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 3000);
+        });
+    });
+</script>
+
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

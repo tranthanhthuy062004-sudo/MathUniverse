@@ -1,0 +1,317 @@
+﻿@model MathUniverse.Models.ViewModels.StudentProfileViewModel
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân";
+}
+
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 40px;
+        color: white;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(118, 75, 162, 0.3);
+    }
+    
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+        animation: rotate 20s linear infinite;
+    }
+    
+    @@keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .profile-avatar-container {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 20px;
+    }
+    
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 5px solid rgba(255,255,255,0.5);
+        object-fit: cover;
+        background: white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .profile-stats {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 15px;
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-around;
+    }
+    
+    .stat-item {
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #ffd700;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    
+    .profile-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        padding: 30px;
+        height: 100%;
+    }
+    
+    .avatar-option {
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        border: 3px solid transparent;
+        border-radius: 50%;
+        padding: 2px;
+    }
+    
+    .avatar-option:hover {
+        transform: scale(1.1);
+    }
+    
+    .avatar-option.selected {
+        border-color: #764ba2;
+        box-shadow: 0 0 0 4px rgba(118, 75, 162, 0.2);
+        transform: scale(1.1);
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #4a5568;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 5px 15px rgba(118, 75, 162, 0.3);
+    }
+    
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(118, 75, 162, 0.4);
+        color: white;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="row">
+        <!-- Left Column: Profile Summary -->
+        <div class="col-md-4 mb-4">
+            <div class="profile-header text-center">
+                <div class="profile-avatar-container">
+                    @{
+                        var defaultChildAvatar = "https://cdn-icons-png.flaticon.com/512/2922/2922510.png"; // kid-friendly placeholder
+                        var currentAvatarSrc = string.IsNullOrEmpty(Model.AvatarUrl) ? defaultChildAvatar : Model.AvatarUrl;
+                    }
+                    <img src="@currentAvatarSrc" alt="Avatar" class="profile-avatar" id="currentAvatar">
+                </div>
+                <h3 class="fw-bold mb-1">@Model.FullName</h3>
+                <p class="mb-2 opacity-75">@Model.StudentCode</p>
+                <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                    <i class="fas fa-star"></i> Lớp @Model.Grade
+                </span>
+                
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">@Model.TotalPoints</div>
+                        <div class="stat-label">Điểm tích lũy</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">@Model.BadgesEarned</div>
+                        <div class="stat-label">Huy hiệu</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-info-circle text-primary"></i> Thông tin tài khoản</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3 d-flex justify-content-between">
+                            <span class="text-muted">Ngày tham gia:</span>
+                            <span class="fw-bold">@Model.EnrollmentDate.ToString("dd/MM/yyyy")</span>
+                        </li>
+                        <li class="mb-3 d-flex justify-content-between">
+                            <span class="text-muted">Trạng thái:</span>
+                            <span class="badge bg-success">Đang hoạt động</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column: Edit Form -->
+        <div class="col-md-8">
+            <div class="profile-card">
+                <h4 class="fw-bold mb-4 text-primary">
+                    <i class="fas fa-user-edit"></i> Cập nhật thông tin
+                </h4>
+                
+                <form asp-action="Profile" method="post">
+                    <input type="hidden" asp-for="StudentId" />
+                    <input type="hidden" asp-for="StudentCode" />
+                    <input type="hidden" asp-for="TotalPoints" />
+                    <input type="hidden" asp-for="BadgesEarned" />
+                    <input type="hidden" asp-for="EnrollmentDate" />
+                    
+                    <div class="row g-3">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Chọn Avatar</label>
+                            <div class="d-flex gap-3 flex-wrap justify-content-center p-3 bg-light rounded-3">
+                                @{
+                                    var avatars = new[] 
+                                    { 
+                                        "/images/avatars/avatar1.png", 
+                                        "/images/avatars/avatar2.png", 
+                                        "/images/avatars/avatar3.png", 
+                                        "/images/avatars/avatar4.png",
+                                        "/images/avatars/avatar5.png",
+                                        "/images/avatars/avatar6.png"
+                                    };
+                                    // Note: In a real app, these images should exist. 
+                                    // For now we use placeholders or assume they exist.
+                                    // Or we can use font awesome icons if images are missing, but let's stick to URLs.
+                                    // Since I don't have the images, I'll use a hidden input for AvatarUrl and some clickable icons/images.
+                                }
+                                
+                                <!-- Using some online placeholders for demo or just simple colored circles if images missing -->
+                                <input type="hidden" asp-for="AvatarUrl" id="avatarUrlInput" />
+                                
+                                <div class="avatar-selector d-flex gap-3 flex-wrap">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" class="avatar-option" width="60" height="60" onclick="selectAvatar(this.src)" title="Bạn nam" alt="Boy">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/2922/2922561.png" class="avatar-option" width="60" height="60" onclick="selectAvatar(this.src)" title="Bạn nữ" alt="Girl">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/3212/3212567.png" class="avatar-option" width="60" height="60" onclick="selectAvatar(this.src)" title="Tên lửa" alt="Rocket">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" class="avatar-option" width="60" height="60" onclick="selectAvatar(this.src)" title="Robot" alt="Robot">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" class="avatar-option" width="60" height="60" onclick="selectAvatar(this.src)" title="Mèo con" alt="Cat">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/2026/2026512.png" class="avatar-option" width="60" height="60" onclick="selectAvatar(this.src)" title="Phi hành gia" alt="Astronaut">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label"></label>
+                            <input asp-for="FullName" class="form-control" placeholder="Nhập họ và tên" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label asp-for="Grade" class="form-label"></label>
+                            <select asp-for="Grade" class="form-select">
+                                <option value="">-- Chọn lớp --</option>
+                                <option value="1">Lớp 1</option>
+                                <option value="2">Lớp 2</option>
+                                <option value="3">Lớp 3</option>
+                                <option value="4">Lớp 4</option>
+                                <option value="5">Lớp 5</option>
+                            </select>
+                            <span asp-validation-for="Grade" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label asp-for="DateOfBirth" class="form-label"></label>
+                            <input asp-for="DateOfBirth" class="form-control" type="date" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label asp-for="ParentEmail" class="form-label"></label>
+                            <input asp-for="ParentEmail" class="form-control" placeholder="email@example.com" />
+                            <span asp-validation-for="ParentEmail" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-end">
+                        <a asp-action="Dashboard" class="btn btn-light me-2 rounded-pill px-4">Hủy bỏ</a>
+                        <button type="submit" class="btn btn-save">
+                            <i class="fas fa-save"></i> Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const defaultAvatar = 'https://cdn-icons-png.flaticon.com/512/2922/2922510.png';
+        
+        function selectAvatar(url) {
+            const avatarInput = document.getElementById('avatarUrlInput');
+            const currentAvatar = document.getElementById('currentAvatar');
+            const clickedOption = event.currentTarget;
+            
+            // Check if clicking the already selected avatar
+            if (clickedOption.classList.contains('selected')) {
+                // Deselect - revert to default
+                avatarInput.value = '';
+                currentAvatar.src = defaultAvatar;
+                clickedOption.classList.remove('selected');
+            } else {
+                // Select new avatar
+                avatarInput.value = url;
+                currentAvatar.src = url;
+                
+                // Update UI selection
+                document.querySelectorAll('.avatar-option').forEach(img => {
+                    img.classList.remove('selected');
+                });
+                clickedOption.classList.add('selected');
+            }
+        }
+        
+        // Highlight current avatar on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const currentUrl = document.getElementById('avatarUrlInput').value;
+            if(currentUrl) {
+                document.querySelectorAll('.avatar-option').forEach(img => {
+                    if(img.src === currentUrl) {
+                        img.classList.add('selected');
+                    }
+                });
+            }
+        });
+    </script>
+}
+

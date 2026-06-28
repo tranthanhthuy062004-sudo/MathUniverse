@@ -1,0 +1,68 @@
+﻿@model MathUniverse.Models.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-primary">
+                        <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                    </h2>
+                    <p class="text-muted">Chào mừng bạn quay lại Vũ trụ Toán học!</p>
+                </div>
+
+                <form asp-controller="Account" asp-action="Login" method="post">
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="UserName" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            <input asp-for="UserName" class="form-control" placeholder="Ví dụ: email@example.com" type="email" autofocus />
+                        </div>
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle"></i> Nhập email phụ huynh đã đăng ký
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input asp-for="Password" class="form-control" placeholder="Nhập mật khẩu" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label"></label>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                        </button>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="mb-0">Chưa có tài khoản? 
+                            <a asp-controller="Account" asp-action="Register" class="text-primary fw-bold">
+                                Đăng ký ngay
+                            </a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

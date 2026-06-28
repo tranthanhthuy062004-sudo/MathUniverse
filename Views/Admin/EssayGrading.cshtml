@@ -1,0 +1,240 @@
+﻿@model List<MathUniverse.Models.EssayAnswer>
+@{
+    ViewData["Title"] = "Chấm điểm Tự luận";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-pen-square"></i> Chấm điểm Tự luận</h2>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Filters -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Bài học</label>
+                    <select name="lessonId" class="form-select">
+                        <option value="">Tất cả bài học</option>
+                        @foreach (var lesson in ViewBag.Lessons as List<MathUniverse.Models.Lesson>)
+                        {
+                            <option value="@lesson.LessonId" selected="@(ViewBag.LessonId == lesson.LessonId)">
+                                Lớp @lesson.Grade - @lesson.Title
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Trạng thái</label>
+                    <select name="ungraded" class="form-select">
+                        <option value="">Tất cả</option>
+                        <option value="true" selected="@(ViewBag.Ungraded == true)">Chưa chấm</option>
+                        <option value="false" selected="@(ViewBag.Ungraded == false)">Đã chấm</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter"></i> Lọc
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Essay Answers List -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Học sinh</th>
+                                <th>Bài học</th>
+                                <th>Câu hỏi</th>
+                                <th>Ngày nộp</th>
+                                <th>Điểm</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var essayAnswer in Model)
+                            {
+                                <tr id="row-@essayAnswer.EssayAnswerId">
+                                    <td>
+                                        <strong>@essayAnswer.ExerciseResult.Student.FullName</strong><br />
+                                        <small class="text-muted">@essayAnswer.ExerciseResult.Student.StudentCode</small>
+                                    </td>
+                                    <td>
+                                        @essayAnswer.ExerciseResult.Exercise.Lesson.Title<br />
+                                        <small class="text-muted">Lớp @essayAnswer.ExerciseResult.Exercise.Lesson.Grade</small>
+                                    </td>
+                                    <td>
+                                        <div style="max-width: 300px;">
+                                            @essayAnswer.Question.QuestionText
+                                        </div>
+                                    </td>
+                                    <td>@essayAnswer.SubmittedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>
+                                        @if (essayAnswer.Score.HasValue)
+                                        {
+                                            <span class="badge bg-success">@essayAnswer.Score.Value.ToString("F1")/10</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Chưa chấm</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (essayAnswer.Score.HasValue)
+                                        {
+                                            <span class="badge bg-info">Đã chấm</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">Chờ chấm</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#gradeModal-@essayAnswer.EssayAnswerId">
+                                            <i class="fas fa-edit"></i> @(essayAnswer.Score.HasValue ? "Xem/Sửa" : "Chấm điểm")
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Modal for grading -->
+                                <div class="modal fade" id="gradeModal-@essayAnswer.EssayAnswerId" tabindex="-1">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Chấm điểm Tự luận</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Học sinh:</label>
+                                                    <p>@essayAnswer.ExerciseResult.Student.FullName (@essayAnswer.ExerciseResult.Student.StudentCode)</p>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Câu hỏi:</label>
+                                                    <p>@essayAnswer.Question.QuestionText</p>
+                                                    @if (!string.IsNullOrEmpty(essayAnswer.Question.ImageUrl))
+                                                    {
+                                                        <img src="@essayAnswer.Question.ImageUrl" class="img-fluid" style="max-height: 200px;" />
+                                                    }
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Câu trả lời:</label>
+                                                    <p class="border p-3 rounded">@essayAnswer.AnswerText</p>
+                                                    @if (!string.IsNullOrEmpty(essayAnswer.ImageUrl))
+                                                    {
+                                                        <div class="mt-2">
+                                                            <label class="form-label">Ảnh đính kèm:</label>
+                                                            <img src="@essayAnswer.ImageUrl" class="img-fluid border rounded" style="max-height: 400px;" />
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Điểm (0-10):</label>
+                                                    <input type="number" class="form-control" id="score-@essayAnswer.EssayAnswerId" 
+                                                           min="0" max="10" step="0.5" value="@(essayAnswer.Score ?? 0)" required />
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-bold">Nhận xét:</label>
+                                                    <textarea class="form-control" id="feedback-@essayAnswer.EssayAnswerId" 
+                                                              rows="3" placeholder="Nhận xét của giáo viên...">@essayAnswer.Feedback</textarea>
+                                                </div>
+                                                @if (essayAnswer.GradedDate.HasValue)
+                                                {
+                                                    <div class="alert alert-info">
+                                                        <small>
+                                                            <i class="fas fa-info-circle"></i> 
+                                                            Đã chấm lúc: @essayAnswer.GradedDate.Value.ToString("dd/MM/yyyy HH:mm")
+                                                        </small>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                <button type="button" class="btn btn-success" onclick="saveGrade(@essayAnswer.EssayAnswerId)">
+                                                    <i class="fas fa-save"></i> Lưu điểm
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle"></i> Không có bài tự luận nào để chấm
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    async function saveGrade(essayAnswerId) {
+        const score = parseFloat(document.getElementById(`score-${essayAnswerId}`).value);
+        const feedback = document.getElementById(`feedback-${essayAnswerId}`).value;
+
+        if (score < 0 || score > 10) {
+            alert('Điểm phải từ 0 đến 10');
+            return;
+        }
+
+        try {
+            const response = await fetch('/Admin/GradeEssay', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `essayAnswerId=${essayAnswerId}&score=${score}&feedback=${encodeURIComponent(feedback || '')}`
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById(`gradeModal-${essayAnswerId}`));
+                modal.hide();
+
+                // Show success message
+                alert(result.message);
+
+                // Reload page to update status
+                location.reload();
+            } else {
+                alert('Lỗi: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi chấm điểm');
+        }
+    }
+
+    // Auto dismiss alerts
+    setTimeout(() => {
+        document.querySelectorAll('.alert-dismissible').forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 3000);
+</script>
+

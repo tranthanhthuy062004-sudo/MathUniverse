@@ -1,0 +1,132 @@
+﻿@model List<MathUniverse.Models.Lesson>
+@{
+    ViewData["Title"] = "Quản lý bài giảng";
+}
+
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold">
+            <i class="fas fa-book-open text-primary"></i> Quản lý bài giảng
+        </h2>
+        <a asp-action="CreateLesson" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Tạo bài giảng mới
+        </a>
+    </div>
+    <p class="text-muted">Danh sách các bài giảng trong hệ thống</p>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Tiêu đề</th>
+                        <th>Lớp</th>
+                        <th>Chủ đề</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        foreach (var lesson in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold">@lesson.Title</div>
+                                    <small class="text-muted text-truncate d-inline-block" style="max-width: 200px;">
+                                        @lesson.Description
+                                    </small>
+                                </td>
+                                <td><span class="badge bg-info">Lớp @lesson.Grade</span></td>
+                                <td>@lesson.Topic</td>
+                                <td>
+                                    @if (lesson.IsPublished)
+                                    {
+                                        <span class="badge bg-success">Công khai</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Nháp</span>
+                                    }
+                                </td>
+                                <td>@lesson.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                <td class="text-end pe-4">
+                                    <a asp-action="CreateExercise" asp-route-lessonId="@lesson.LessonId" class="btn btn-sm btn-outline-success me-1">
+                                        <i class="fas fa-tasks"></i> Tạo bài tập
+                                    </a>
+                                    <a asp-action="ManageGameContent" asp-route-lessonId="@lesson.LessonId" class="btn btn-sm btn-outline-warning me-1">
+                                        <i class="fas fa-gamepad"></i> Trò chơi
+                                    </a>
+                                    <a asp-action="EditLesson" asp-route-id="@lesson.LessonId" class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="fas fa-edit"></i> Sửa
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteLesson(@lesson.LessonId)">
+                                        <i class="fas fa-trash"></i> Xóa
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fas fa-folder-open fa-2x mb-3"></i>
+                                <p>Chưa có bài giảng nào. Hãy tạo bài giảng mới!</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function deleteLesson(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa bài giảng này? Tất cả bài tập và trò chơi liên quan cũng sẽ bị xóa.')) {
+                fetch('@Url.Action("DeleteLesson", "Admin")/' + id, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Xóa bài giảng thành công!');
+                        location.reload();
+                    } else {
+                        alert('Có lỗi xảy ra khi xóa bài giảng!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa bài giảng!');
+                });
+            }
+        }
+
+        // Auto dismiss alerts after 3 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.alert-dismissible').forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 3000);
+    </script>
+}
+

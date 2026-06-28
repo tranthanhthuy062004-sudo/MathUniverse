@@ -1,0 +1,556 @@
+﻿@model List<MathUniverse.Models.ViewModels.RankingViewModel>
+@{
+    ViewData["Title"] = "Bảng xếp hạng";
+}
+
+<style>
+    /* Space-themed background for consistency */
+    .ranking-page-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(180deg, #e0e7ff 0%, #c7d2fe 35%, #a5b4fc 70%, #ddd6fe 100%);
+        opacity: 0.5;
+    }
+
+    .ranking-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 20px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+    
+    .ranking-header .crown-icon {
+        color: #ffd700 !important;
+        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+    }
+    
+    .ranking-header h1,
+    .ranking-header p {
+        color: white !important;
+    }
+    
+    /* Grade tabs CSS is now in site.css for consistency */
+    
+    .podium-section {
+        margin-bottom: 40px;
+        padding: 30px 15px;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.3) 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border: 2px solid rgba(139, 92, 246, 0.3);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+    }
+    
+    .podium-section h3 {
+        color: white !important;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+        font-weight: 800;
+    }
+    
+    .podium-section .fa-star {
+        color: #ffd700;
+        filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+    }
+    
+    .podium-container {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .podium-card {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        flex: 0 0 280px;
+    }
+    
+    .podium-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+    
+    .podium-card.rank-1 {
+        order: 2;
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        transform: scale(1.1);
+        z-index: 3;
+        box-shadow: 0 15px 40px rgba(255, 215, 0, 0.3);
+    }
+    
+    .podium-card.rank-1:hover {
+        transform: scale(1.15) translateY(-10px);
+    }
+    
+    .podium-card.rank-2 {
+        order: 1;
+        background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+        z-index: 2;
+    }
+    
+    .podium-card.rank-3 {
+        order: 3;
+        background: linear-gradient(135deg, #cd7f32 0%, #e8a87c 100%);
+        z-index: 1;
+    }
+    
+    .crown-icon {
+        font-size: 3rem;
+        animation: bounce 2s infinite;
+        display: block;
+        margin-bottom: 15px;
+    }
+    
+    @@keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .avatar-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+    
+    .podium-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .rank-badge {
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 1.1rem;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        white-space: nowrap;
+    }
+    
+    .ranking-table-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+    
+    .table-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px 25px;
+    }
+    
+    .ranking-table {
+        margin-bottom: 0;
+    }
+    
+    .ranking-table thead {
+        background: #f8f9fa;
+    }
+    
+    .ranking-table tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .ranking-table tbody tr:hover {
+        background: #f0f8ff;
+        transform: scale(1.01);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+    
+    .ranking-table tbody tr.current-user {
+        background: linear-gradient(90deg, #e3f2fd 0%, #bbdefb 100%);
+        font-weight: bold;
+    }
+    
+    .rank-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333; /* Dark for table on white background */
+    }
+    
+    /* Podium cards need white text */
+    .podium-card .rank-number,
+    .podium-card h4,
+    .podium-card h5,
+    .podium-card h6 {
+        color: #fff;
+    }
+    
+    .podium-card.rank-1 h4,
+    .podium-card.rank-2 h5 {
+        color: inherit; /* Use card-specific colors */
+    }
+    
+    .points-display {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+        color: #333; /* Keep dark for contrast on yellow */
+        display: inline-block;
+    }
+    
+    .motivational-box {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        border: none;
+        border-radius: 20px;
+        padding: 25px;
+        margin-top: 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .motivational-box i {
+        font-size: 2rem;
+        margin-right: 10px;
+        color: #333; /* Dark icon for contrast */
+    }
+    
+    .motivational-box h5,
+    .motivational-box p {
+        color: #333; /* Dark text for readability */
+    }
+    
+    .student-avatar-small {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e9ecef;
+    }
+    
+    .grade-badge {
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    
+    .badge-rank-1 { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #333; }
+    .badge-rank-2 { background: linear-gradient(135deg, #c0c0c0, #e0e0e0); color: #333; }
+    .badge-rank-3 { background: linear-gradient(135deg, #cd7f32, #e8a87c); color: white; }
+    
+    @@media (max-width: 768px) {
+        .podium-container {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .podium-card {
+            width: 100%;
+            max-width: 350px;
+        }
+        
+        .podium-card.rank-1,
+        .podium-card.rank-2,
+        .podium-card.rank-3 {
+            order: initial;
+            transform: scale(1);
+        }
+    }
+</style>
+
+<div class="ranking-page-background"></div>
+
+<div class="ranking-header">
+    <div class="crown-icon">
+        <i class="fas fa-trophy"></i>
+    </div>
+    <h1 class="display-4 fw-bold mb-3">Bảng Xếp Hạng</h1>
+    <p class="lead fw-bold mb-0">Cùng thi đua và cố gắng hết mình để trở thành nhà vô địch!</p>
+</div>
+
+<!-- Grade Filter Tabs -->
+<div class="grade-tabs-container">
+    <h5 class="text-center mb-3">
+        <i class="fas fa-filter"></i> Chọn lớp để xem
+    </h5>
+    <div class="grade-tabs">
+        <a asp-action="Ranking" class="grade-tab @(ViewBag.SelectedGrade == null ? "active" : "")">
+            <i class="fas fa-th-large"></i>
+            <span class="grade-label">Tất cả</span>
+        </a>
+        @for (int i = 1; i <= 5; i++)
+        {
+            var icons = new[] { "fa-dice-one", "fa-dice-two", "fa-dice-three", "fa-dice-four", "fa-dice-five" };
+            var colors = new[] { "grade-1", "grade-2", "grade-3", "grade-4", "grade-5" };
+            <a asp-action="Ranking" asp-route-grade="@i" 
+               class="grade-tab @colors[i-1] @(ViewBag.SelectedGrade == i ? "active" : "")">
+                <i class="fas @icons[i-1]"></i>
+                <span class="grade-label">Lớp @i</span>
+            </a>
+        }
+    </div>
+</div>
+
+<!-- Top 3 Podium -->
+@if (Model != null && Model.Count >= 3)
+{
+    <div class="podium-section">
+        <h3 class="text-center mb-4 text-white">
+            <i class="fas fa-star"></i> Top 3 Xuất Sắc Nhất <i class="fas fa-star"></i>
+        </h3>
+        <div class="podium-container">
+            <!-- Rank 1 - Champion -->
+            <div class="podium-card rank-1">
+                <div class="crown-icon" style="color: #ff6b6b;">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="avatar-wrapper">
+                    @if (!string.IsNullOrEmpty(Model[0].AvatarUrl))
+                    {
+                        <img src="@Model[0].AvatarUrl" alt="Avatar" class="podium-avatar">
+                    }
+                    else
+                    {
+                        <div class="podium-avatar d-inline-flex align-items-center justify-content-center" 
+                             style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+                            <i class="fas fa-user fa-3x text-white"></i>
+                        </div>
+                    }
+                    <span class="rank-badge badge-rank-1">
+                        <i class="fas fa-crown"></i> Quán quân
+                    </span>
+                </div>
+                <h4 class="fw-bold mt-4 mb-2 text-white">
+                    @Model[0].FullName
+                    @if (Model[0].IsCurrentUser)
+                    {
+                        <i class="fas fa-star text-warning"></i>
+                    }
+                </h4>
+                <p class="mb-3 text-white"><code style="background: rgba(255,255,255,0.2); color: white; padding: 4px 8px; border-radius: 8px;">@Model[0].StudentCode</code></p>
+                <div class="points-display fs-4">
+                    <i class="fas fa-coins"></i> @Model[0].TotalPoints điểm
+                </div>
+            </div>
+
+            <!-- Rank 2 - Silver -->
+            <div class="podium-card rank-2">
+                <div class="avatar-wrapper">
+                    @if (!string.IsNullOrEmpty(Model[1].AvatarUrl))
+                    {
+                        <img src="@Model[1].AvatarUrl" alt="Avatar" class="podium-avatar" style="width: 85px; height: 85px;">
+                    }
+                    else
+                    {
+                        <div class="podium-avatar d-inline-flex align-items-center justify-content-center" 
+                             style="background: linear-gradient(135deg, #94a3b8, #cbd5e1); width: 85px; height: 85px;">
+                            <i class="fas fa-user fa-2x text-white"></i>
+                        </div>
+                    }
+                    <span class="rank-badge badge-rank-2">
+                        <i class="fas fa-medal"></i> Á quân
+                    </span>
+                </div>
+                <h5 class="fw-bold mt-4 mb-2 text-white">
+                    @Model[1].FullName
+                    @if (Model[1].IsCurrentUser)
+                    {
+                        <i class="fas fa-star text-warning"></i>
+                    }
+                </h5>
+                <p class="mb-3 text-white"><code style="background: rgba(255,255,255,0.2); color: white; padding: 4px 8px; border-radius: 8px;">@Model[1].StudentCode</code></p>
+                <div class="points-display fs-5" style="background: linear-gradient(135deg, #e0e0e0, #f5f5f5);">
+                    <i class="fas fa-coins"></i> @Model[1].TotalPoints điểm
+                </div>
+            </div>
+
+            <!-- Rank 3 - Bronze -->
+            <div class="podium-card rank-3">
+                <div class="avatar-wrapper">
+                    @if (!string.IsNullOrEmpty(Model[2].AvatarUrl))
+                    {
+                        <img src="@Model[2].AvatarUrl" alt="Avatar" class="podium-avatar" style="width: 75px; height: 75px;">
+                    }
+                    else
+                    {
+                        <div class="podium-avatar d-inline-flex align-items-center justify-content-center" 
+                             style="background: linear-gradient(135deg, #cd7f32, #e8a87c); width: 75px; height: 75px;">
+                            <i class="fas fa-user fa-2x text-white"></i>
+                        </div>
+                    }
+                    <span class="rank-badge badge-rank-3">
+                        <i class="fas fa-medal"></i> Hạng ba
+                    </span>
+                </div>
+                <h6 class="fw-bold mt-4 mb-2 text-white">
+                    @Model[2].FullName
+                    @if (Model[2].IsCurrentUser)
+                    {
+                        <i class="fas fa-star text-warning"></i>
+                    }
+                </h6>
+                <p class="mb-3 text-white"><code style="background: rgba(0,0,0,0.2); color: white; padding: 4px 8px; border-radius: 8px;">@Model[2].StudentCode</code></p>
+                <div class="points-display fs-6" style="background: rgba(255,255,255,0.9);">
+                    <i class="fas fa-coins"></i> @Model[2].TotalPoints điểm
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Full Ranking Table -->
+<div class="ranking-table-card">
+    <div class="table-header">
+        <h4 class="mb-0 text-white">
+            <i class="fas fa-list-ol"></i> Bảng xếp hạng đầy đủ
+            @if (ViewBag.SelectedGrade != null)
+            {
+                <span> - Lớp @ViewBag.SelectedGrade</span>
+            }
+        </h4>
+    </div>
+    <div class="p-0">
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table ranking-table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 100px;">
+                                <i class="fas fa-hashtag"></i> Hạng
+                            </th>
+                            <th>
+                                <i class="fas fa-user"></i> Học sinh
+                            </th>
+                            <th>
+                                <i class="fas fa-id-card"></i> Mã số
+                            </th>
+                            <th class="text-center">
+                                <i class="fas fa-school"></i> Lớp
+                            </th>
+                            <th class="text-end">
+                                <i class="fas fa-coins"></i> Điểm số
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var student in Model)
+                        {
+                            <tr class="@(student.IsCurrentUser ? "current-user" : "")">
+                                <td class="text-center">
+                                    @if (student.Rank == 1)
+                                    {
+                                        <span class="badge badge-rank-1" style="font-size: 1.1rem; padding: 10px 15px;">
+                                            <i class="fas fa-crown"></i> #@student.Rank
+                                        </span>
+                                    }
+                                    else if (student.Rank == 2)
+                                    {
+                                        <span class="badge badge-rank-2" style="font-size: 1.1rem; padding: 10px 15px;">
+                                            <i class="fas fa-medal"></i> #@student.Rank
+                                        </span>
+                                    }
+                                    else if (student.Rank == 3)
+                                    {
+                                        <span class="badge badge-rank-3" style="font-size: 1.1rem; padding: 10px 15px;">
+                                            <i class="fas fa-medal"></i> #@student.Rank
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="rank-number">#@student.Rank</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        @if (!string.IsNullOrEmpty(student.AvatarUrl))
+                                        {
+                                            <img src="@student.AvatarUrl" alt="Avatar" class="student-avatar-small">
+                                        }
+                                        else
+                                        {
+                                            <div class="student-avatar-small d-inline-flex align-items-center justify-content-center" 
+                                                 style="background: linear-gradient(135deg, #8b5cf6, #a78bfa);">
+                                                <i class="fas fa-user text-white"></i>
+                                            </div>
+                                        }
+                                        <div>
+                                            <strong class="@(student.IsCurrentUser ? "text-primary" : "")">
+                                                @student.FullName
+                                            </strong>
+                                            @if (student.IsCurrentUser)
+                                            {
+                                                <span class="badge bg-primary ms-2">
+                                                    <i class="fas fa-star"></i> Bạn
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <code style="background: #f8f9fa; padding: 6px 12px; border-radius: 8px; font-weight: 600;">
+                                        @student.StudentCode
+                                    </code>
+                                </td>
+                                <td class="text-center">
+                                    @{
+                                        var gradeColors = new[] { "bg-danger", "bg-warning", "bg-info", "bg-success", "bg-primary" };
+                                        var colorIndex = (student.Grade - 1) % gradeColors.Length;
+                                    }
+                                    <span class="grade-badge @gradeColors[colorIndex] text-white">
+                                        <i class="fas fa-school"></i> Lớp @student.Grade
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="points-display">
+                                        <i class="fas fa-coins"></i> @student.TotalPoints
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <div style="font-size: 4rem; color: #e9ecef; margin-bottom: 20px;">
+                    <i class="fas fa-users-slash"></i>
+                </div>
+                <h5 class="text-muted">Chưa có dữ liệu xếp hạng</h5>
+                <p class="text-muted">Hãy bắt đầu học và làm bài tập để xuất hiện trên bảng xếp hạng nhé!</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Motivational Message -->
+<div class="motivational-box text-center">
+    <i class="fas fa-rocket"></i>
+    <strong style="font-size: 1.2rem;">Mẹo vàng:</strong>
+    <p class="mb-0 mt-2" style="font-size: 1.1rem;">
+        Hoàn thành nhiều bài học, đạt điểm cao trong bài tập và tích cực luyện tập mỗi ngày để leo hạng nhanh chóng! 
+        <i class="fas fa-heart" style="color: #ff6b6b;"></i>
+    </p>
+</div>
+
+<div class="text-center mt-4 mb-5">
+    <a asp-action="Dashboard" class="btn btn-lg btn-primary" style="border-radius: 25px; padding: 15px 40px;">
+        <i class="fas fa-arrow-left"></i> Quay lại Bảng điều khiển
+    </a>
+</div>
+

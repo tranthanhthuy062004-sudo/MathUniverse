@@ -1,0 +1,97 @@
+﻿@model MathUniverse.Models.Lesson
+@{
+    ViewData["Title"] = Model.Title + " - Xem thử";
+}
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm border-0">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                <h4 class="mb-0" style="color: #ffffff;">
+                    <i class="fas fa-eye"></i> Xem thử bài học
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <span class="badge bg-primary me-2">Lớp @Model.Grade</span>
+                    <span class="badge bg-secondary">@Model.Topic</span>
+                </div>
+                
+                <h3>@Model.Title</h3>
+                
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <p class="text-muted">@Model.Description</p>
+                }
+
+                @if (User.Identity?.IsAuthenticated != true)
+                {
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Đây là chế độ xem thử. Để học toàn bộ khóa học và làm bài tập, vui lòng 
+                        <a asp-controller="Account" asp-action="Register" class="alert-link">đăng ký tài khoản</a>.
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        Bạn đã đăng nhập! 
+                        <a asp-controller="Student" asp-action="Lessons" class="alert-link">Xem tất cả bài học của bạn</a> 
+                        hoặc 
+                        <a asp-controller="Student" asp-action="Dashboard" class="alert-link">Đến bảng điều khiển</a>.
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.VideoUrl))
+                {
+                    var embedUrl = Model.VideoUrl;
+                    var videoId = "";
+                    
+                    if (embedUrl.Contains("youtu.be/"))
+                    {
+                        videoId = embedUrl.Split("youtu.be/")[1].Split('?')[0];
+                    }
+                    else if (embedUrl.Contains("youtube.com/embed/"))
+                    {
+                        videoId = embedUrl.Split("embed/")[1].Split('?')[0];
+                    }
+                    else if (embedUrl.Contains("v="))
+                    {
+                        var parts = embedUrl.Split("v=");
+                        if (parts.Length > 1)
+                        {
+                            videoId = parts[1].Split('&')[0];
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(videoId))
+                    {
+                        embedUrl = $"https://www.youtube.com/embed/{videoId}";
+                    }
+
+                    <div class="ratio ratio-16x9 mb-4">
+                        <iframe src="@embedUrl" allowfullscreen></iframe>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.TheoryContent))
+                {
+                    <div class="theory-content">
+                        <h5><i class="fas fa-lightbulb text-warning"></i> Tóm tắt lý thuyết</h5>
+                        @Html.Raw(Model.TheoryContent)
+                    </div>
+                }
+            </div>
+            <div class="card-footer">
+                <a asp-controller="Home" asp-action="Browse" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-primary float-end">
+                    <i class="fas fa-user-plus"></i> Đăng ký để học toàn bộ
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+

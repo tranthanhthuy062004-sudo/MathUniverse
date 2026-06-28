@@ -1,0 +1,17 @@
+﻿@model MathUniverse.ViewComponents.UserAvatarViewModel
+
+<style>
+    .user-avatar-nav {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        margin-right: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
+<img src="@Model.AvatarUrl" alt="Avatar" class="user-avatar-nav" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922510.png'">
+<span>@Model.UserName</span>
+

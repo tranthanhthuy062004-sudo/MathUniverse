@@ -1,0 +1,260 @@
+﻿@model MathUniverse.Models.ViewModels.ManageStudentViewModel
+@{
+    ViewData["Title"] = "Quản lý học sinh";
+}
+
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="fw-bold">
+                <i class="fas fa-user-graduate text-primary"></i> Quản lý học sinh
+            </h2>
+            <p class="text-muted">Danh sách học sinh và trạng thái tài khoản</p>
+        </div>
+        <button onclick="deleteAllStudents()" class="btn btn-danger">
+            <i class="fas fa-trash-alt"></i> Xóa tất cả học sinh
+        </button>
+    </div>
+</div>
+
+<!-- Filter & Search -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" asp-action="Students" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Tìm kiếm</label>
+                <input type="text" name="search" class="form-control" placeholder="Tên hoặc mã học sinh..." value="@Model.SearchTerm">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Lớp</label>
+                <select name="grade" class="form-select">
+                    <option value="">Tất cả</option>
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <option value="@i" selected="@(Model.FilterGrade == i)">Lớp @i</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-filter"></i> Lọc
+                </button>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <a asp-action="Students" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-sync"></i> Đặt lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Students Table -->
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Học sinh</th>
+                        <th>Mã số</th>
+                        <th>Lớp</th>
+                        <th>Điểm tích lũy</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Students.Any())
+                    {
+                        foreach (var student in Model.Students)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        @if (!string.IsNullOrEmpty(student.AvatarUrl))
+                                        {
+                                            <img src="@student.AvatarUrl" class="rounded-circle me-3" style="width: 40px; height: 40px; object-fit: cover;" alt="Avatar">
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-user text-secondary"></i>
+                                            </div>
+                                        }
+                                        <div>
+                                            <div class="fw-bold">@student.FullName</div>
+                                            <small class="text-muted">@student.ParentEmail</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><code>@student.StudentCode</code></td>
+                                <td><span class="badge bg-info">Lớp @student.Grade</span></td>
+                                <td>
+                                    <span class="text-warning fw-bold">
+                                        <i class="fas fa-coins"></i> @student.TotalPoints
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (student.IsActive)
+                                    {
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Đã khóa</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a asp-action="StudentDetail" asp-route-id="@student.StudentId" class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="fas fa-eye"></i> Chi tiết
+                                    </a>
+                                    <button type="button" class="btn btn-sm @(student.IsActive ? "btn-outline-danger" : "btn-outline-success")" 
+                                            onclick="toggleStatus(@student.StudentId)">
+                                        <i class="fas @(student.IsActive ? "fa-lock" : "fa-unlock")"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fas fa-search fa-2x mb-3"></i>
+                                <p>Không tìm thấy học sinh nào phù hợp.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleStatus(id) {
+            if (confirm('Bạn có chắc chắn muốn thay đổi trạng thái tài khoản này?')) {
+                $.post('/Admin/ToggleStudentStatus', { id: id }, function(result) {
+                    if (result.success) {
+                        // Tìm hàng của học sinh trong bảng
+                        const row = $(`button[onclick="toggleStatus(${id})"]`).closest('tr');
+                        const statusBadge = row.find('td:nth-child(5)'); // Cột trạng thái
+                        const toggleButton = row.find(`button[onclick="toggleStatus(${id})"]`);
+                        
+                        // Cập nhật badge trạng thái
+                        if (result.isActive) {
+                            statusBadge.html('<span class="badge bg-success">Hoạt động</span>');
+                            toggleButton.removeClass('btn-outline-success').addClass('btn-outline-danger');
+                            toggleButton.html('<i class="fas fa-lock"></i>');
+                        } else {
+                            statusBadge.html('<span class="badge bg-danger">Đã khóa</span>');
+                            toggleButton.removeClass('btn-outline-danger').addClass('btn-outline-success');
+                            toggleButton.html('<i class="fas fa-unlock"></i>');
+                        }
+                        
+                        // Hiển thị thông báo thành công
+                        showNotification(result.isActive ? 'Đã mở khóa tài khoản!' : 'Đã khóa tài khoản!', 'success');
+                    } else {
+                        showNotification('Có lỗi xảy ra!', 'error');
+                    }
+                }).fail(function() {
+                    showNotification('Không thể kết nối đến server!', 'error');
+                });
+            }
+        }
+        
+        function showNotification(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        function deleteAllStudents() {
+            if (confirm('CẢNH BÁO: Bạn có chắc chắn muốn xóa TẤT CẢ tài khoản học sinh?\n\nHành động này KHÔNG THỂ HOÀN TÁC!')) {
+                if (confirm('Xác nhận lần 2: Tất cả dữ liệu học sinh sẽ bị xóa vĩnh viễn. Bạn có chắc chắn?')) {
+                    // Show loading state
+                    const deleteBtn = document.querySelector('button[onclick="deleteAllStudents()"]');
+                    if (deleteBtn) {
+                        deleteBtn.disabled = true;
+                        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xóa...';
+                    }
+                    
+                    $.ajax({
+                        url: '@Url.Action("DeleteAllStudents", "Admin")',
+                        type: 'POST',
+                        success: function(result) {
+                            if (result.success) {
+                                // Remove all student rows from table immediately
+                                const studentRows = document.querySelectorAll('tbody tr');
+                                studentRows.forEach(row => {
+                                    // Add fade out animation
+                                    row.style.transition = 'opacity 0.3s ease-out';
+                                    row.style.opacity = '0';
+                                });
+                                
+                                // After animation, remove rows and show empty state
+                                setTimeout(() => {
+                                    studentRows.forEach(row => row.remove());
+                                    
+                                    // Show empty state message
+                                    const tbody = document.querySelector('tbody');
+                                    if (tbody) {
+                                        tbody.innerHTML = `
+                                            <tr>
+                                                <td colspan="7" class="text-center py-5">
+                                                    <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                                                    <p class="text-muted">Không có học sinh nào.</p>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }
+                                    
+                                    // Update statistics if visible
+                                    const statBadges = document.querySelectorAll('.badge');
+                                    statBadges.forEach(badge => {
+                                        if (badge.textContent.includes('học sinh')) {
+                                            badge.textContent = '0 học sinh';
+                                        }
+                                    });
+                                    
+                                    showNotification('Đã xóa tất cả tài khoản học sinh thành công!', 'success');
+                                    
+                                    // Re-enable button (though table is now empty)
+                                    if (deleteBtn) {
+                                        deleteBtn.disabled = false;
+                                        deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Xóa tất cả học sinh';
+                                    }
+                                }, 300);
+                            } else {
+                                showNotification('Lỗi: ' + result.message, 'error');
+                                if (deleteBtn) {
+                                    deleteBtn.disabled = false;
+                                    deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Xóa tất cả học sinh';
+                                }
+                            }
+                        },
+                        error: function() {
+                            showNotification('Không thể kết nối đến server!', 'error');
+                            if (deleteBtn) {
+                                deleteBtn.disabled = false;
+                                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Xóa tất cả học sinh';
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    </script>
+}
+

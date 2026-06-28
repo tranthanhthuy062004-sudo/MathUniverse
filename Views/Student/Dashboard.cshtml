@@ -1,0 +1,204 @@
+﻿@model MathUniverse.Models.ViewModels.StudentDashboardViewModel
+@{
+    ViewData["Title"] = "Bảng điều khiển";
+}
+
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="fw-bold">
+            <i class="fas fa-tachometer-alt text-primary"></i> Chào mừng, @Model.Student.FullName!
+        </h2>
+        <p class="text-muted">Mã học sinh: <strong>@Model.Student.StudentCode</strong> | Lớp <strong>@Model.Student.Grade</strong></p>
+    </div>
+</div>
+
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="card-body text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-white" style="opacity: 0.9;">Bài học hoàn thành</h6>
+                        <h2 class="card-title mb-0 fw-bold text-white">@Model.Statistics.TotalLessonsCompleted</h2>
+                    </div>
+                    <div class="display-4 text-white" style="opacity: 0.25;">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="card-body text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-white" style="opacity: 0.9;">Bài tập đã đạt</h6>
+                        <h2 class="card-title mb-0 fw-bold text-white">@Model.Statistics.TotalExercisesPassed</h2>
+                    </div>
+                    <div class="display-4 text-white" style="opacity: 0.25;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <div class="card-body text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-white" style="opacity: 0.9;">Điểm trung bình</h6>
+                        <h2 class="card-title mb-0 fw-bold text-white">@Model.Statistics.AverageScore.ToString("F1")</h2>
+                    </div>
+                    <div class="display-4 text-white" style="opacity: 0.25;">
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+            <div class="card-body text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2 text-white" style="opacity: 0.9;">Tổng điểm</h6>
+                        <h2 class="card-title mb-0 fw-bold text-white">@Model.Statistics.TotalPoints</h2>
+                    </div>
+                    <div class="display-4 text-white" style="opacity: 0.25;">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4 border-0" style="background-color: #ffffff;">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                <h5 class="mb-0" style="color: #ffffff;">
+                    <i class="fas fa-book"></i> Bài học gần đây
+                </h5>
+            </div>
+            <div class="card-body" style="background-color: #ffffff;">
+                @if (Model.RecentLessons.Any())
+                {
+                    <div class="list-group">
+                        @foreach (var lesson in Model.RecentLessons)
+                        {
+                            <a asp-controller="Student" asp-action="LessonDetail" asp-route-id="@lesson.LessonId" 
+                               class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">@lesson.Title</h6>
+                                        <p class="mb-1 text-muted small">
+                                            <span class="badge bg-primary">Lớp @lesson.Grade</span>
+                                            <span class="badge bg-secondary">@lesson.Topic</span>
+                                        </p>
+                                    </div>
+                                    <div class="text-end">
+                                        @if (lesson.Status == MathUniverse.Models.ProgressStatus.Passed)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check"></i> Hoàn thành
+                                            </span>
+                                        }
+                                        else if (lesson.Status == MathUniverse.Models.ProgressStatus.InProgress)
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock"></i> Đang học
+                                            </span>
+                                            <div class="progress mt-2" style="width: 150px; height: 8px;">
+                                                <div class="progress-bar" role="progressbar" 
+                                                     style="width: @(lesson.CompletionPercentage)%" 
+                                                     aria-valuenow="@lesson.CompletionPercentage" 
+                                                     aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-book-open fa-3x mb-3"></i>
+                        <p>Chưa có bài học nào. Hãy bắt đầu học ngay!</p>
+                        <a asp-controller="Student" asp-action="Lessons" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Bắt đầu học
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0" style="background-color: #ffffff;">
+            <div class="card-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none;">
+                <h5 class="mb-0" style="color: #ffffff;">
+                    <i class="fas fa-chart-line"></i> Tiến độ học tập
+                </h5>
+            </div>
+            <div class="card-body" style="background-color: #ffffff;">
+                <a asp-controller="Student" asp-action="Progress" class="btn btn-outline-primary">
+                    <i class="fas fa-chart-bar"></i> Xem chi tiết tiến độ
+                </a>
+                <a asp-controller="Student" asp-action="Ranking" class="btn btn-outline-warning">
+                    <i class="fas fa-trophy"></i> Xem bảng xếp hạng
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0" style="background-color: #ffffff;">
+            <div class="card-header" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border: none;">
+                <h5 class="mb-0" style="color: #ffffff;">
+                    <i class="fas fa-bell"></i> Thông báo
+                </h5>
+            </div>
+            <div class="card-body" style="max-height: 500px; overflow-y: auto; background-color: #ffffff;">
+                @if (Model.RecentNotifications.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var notification in Model.RecentNotifications)
+                        {
+                            <div class="list-group-item px-0 @(notification.IsRead ? "opacity-50" : "")">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">@notification.Title</h6>
+                                    <small class="text-muted">@notification.CreatedDate.ToString("dd/MM HH:mm")</small>
+                                </div>
+                                <p class="mb-1 small">@notification.Message</p>
+                                @if (!string.IsNullOrEmpty(notification.LinkUrl))
+                                {
+                                    <a href="@notification.LinkUrl" class="btn btn-sm btn-outline-primary mt-2">Xem chi tiết</a>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="text-center mt-3">
+                        <a asp-controller="Student" asp-action="Notifications" class="btn btn-sm btn-link">
+                            Xem tất cả thông báo
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-bell-slash fa-2x mb-2"></i>
+                        <p class="mb-0">Chưa có thông báo mới</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

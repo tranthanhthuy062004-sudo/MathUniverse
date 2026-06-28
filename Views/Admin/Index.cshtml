@@ -1,0 +1,150 @@
+﻿@model MathUniverse.Models.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Bảng điều khiển Quản trị viên";
+}
+
+<div class="mb-4">
+    <h2 class="fw-bold">
+        <i class="fas fa-tachometer-alt text-primary"></i> Bảng điều khiển
+    </h2>
+    <p class="text-muted">Tổng quan về hoạt động của hệ thống</p>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-0 text-white">Tổng học sinh</h6>
+                        <h2 class="display-4 fw-bold mb-0 text-white">@Model.TotalStudents</h2>
+                    </div>
+                    <i class="fas fa-users fa-3x opacity-50 text-white"></i>
+                </div>
+                <small class="text-white">@Model.ActiveStudents đang hoạt động</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-0 text-white">Bài giảng</h6>
+                        <h2 class="display-4 fw-bold mb-0 text-white">@Model.TotalLessons</h2>
+                    </div>
+                    <i class="fas fa-book-open fa-3x opacity-50 text-white"></i>
+                </div>
+                <a asp-action="Lessons" class="text-white text-decoration-none stretched-link">Quản lý bài giảng</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-0 text-white">Bài tập</h6>
+                        <h2 class="display-4 fw-bold mb-0 text-white">@Model.TotalExercises</h2>
+                    </div>
+                    <i class="fas fa-tasks fa-3x opacity-50 text-white"></i>
+                </div>
+                <small class="text-white">Ngân hàng câu hỏi</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white h-100 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-0 text-white">Lớp học</h6>
+                        <h2 class="display-4 fw-bold mb-0 text-white">5</h2>
+                    </div>
+                    <i class="fas fa-school fa-3x opacity-50 text-white"></i>
+                </div>
+                <small class="text-white">Từ lớp 1 đến lớp 5</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Students by Grade Chart -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                <h5 class="mb-0" style="color: #ffffff;"><i class="fas fa-chart-pie"></i> Phân bố học sinh theo lớp</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="studentsGradeChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-header" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border: none;">
+                <h5 class="mb-0" style="color: #ffffff;"><i class="fas fa-bolt"></i> Thao tác nhanh</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-3">
+                    <a asp-action="CreateLesson" class="btn btn-outline-primary btn-lg text-start">
+                        <i class="fas fa-plus-circle me-2"></i> Tạo bài giảng mới
+                    </a>
+                    <a asp-action="Exercises" class="btn btn-outline-warning btn-lg text-start">
+                        <i class="fas fa-tasks me-2"></i> Quản lý bài tập
+                    </a>
+                    <a asp-action="Students" class="btn btn-outline-success btn-lg text-start">
+                        <i class="fas fa-user-graduate me-2"></i> Quản lý danh sách học sinh
+                    </a>
+                    <a asp-action="Lessons" class="btn btn-outline-info btn-lg text-start">
+                        <i class="fas fa-book-open me-2"></i> Xem tất cả bài giảng
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Students by Grade Chart
+        const gradeCtx = document.getElementById('studentsGradeChart').getContext('2d');
+        const gradeChart = new Chart(gradeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Lớp 1', 'Lớp 2', 'Lớp 3', 'Lớp 4', 'Lớp 5'],
+                datasets: [{
+                    data: [
+                        @(Model.StudentsByGrade.ContainsKey(1) ? Model.StudentsByGrade[1] : 0),
+                        @(Model.StudentsByGrade.ContainsKey(2) ? Model.StudentsByGrade[2] : 0),
+                        @(Model.StudentsByGrade.ContainsKey(3) ? Model.StudentsByGrade[3] : 0),
+                        @(Model.StudentsByGrade.ContainsKey(4) ? Model.StudentsByGrade[4] : 0),
+                        @(Model.StudentsByGrade.ContainsKey(5) ? Model.StudentsByGrade[5] : 0)
+                    ],
+                    backgroundColor: [
+                        '#ef4444', // Red
+                        '#f59e0b', // Orange
+                        '#10b981', // Green
+                        '#3b82f6', // Blue
+                        '#8b5cf6'  // Purple
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    </script>
+}
+

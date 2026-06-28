@@ -1,0 +1,67 @@
+﻿@model List<MathUniverse.Models.Lesson>
+@{
+    ViewData["Title"] = "Quản lý Trò chơi";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-gamepad"></i> Quản lý Trò chơi</h2>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Bài học</th>
+                            <th>Lớp</th>
+                            <th>Chủ đề</th>
+                            <th>Số cặp thẻ</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var lesson in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@lesson.Title</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">Lớp @lesson.Grade</span>
+                                </td>
+                                <td>@lesson.Topic</td>
+                                <td>
+                                    @if (lesson.GameContents.Any())
+                                    {
+                                        <span class="badge bg-success">@lesson.GameContents.Count cặp</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Chưa có</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="ManageGameContent" asp-route-lessonId="@lesson.LessonId" 
+                                       class="btn btn-sm btn-primary">
+                                        <i class="fas fa-edit"></i> Quản lý
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

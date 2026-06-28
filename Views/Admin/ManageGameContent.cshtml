@@ -1,0 +1,176 @@
+﻿@model List<MathUniverse.Models.GameContent>
+@{
+    ViewData["Title"] = $"Quản lý Trò chơi - {ViewBag.LessonTitle}";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-gamepad"></i> Quản lý Trò chơi</h2>
+            <p class="text-muted mb-0">Bài học: <strong>@ViewBag.LessonTitle</strong></p>
+        </div>
+        <a asp-action="Games" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Form thêm cặp thẻ mới -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Thêm cặp thẻ mới</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="CreateGameContent" method="post">
+                <input type="hidden" name="lessonId" value="@ViewBag.LessonId" />
+                <div class="row">
+                    <div class="col-md-5">
+                        <label class="form-label">Thẻ 1 (Câu hỏi)</label>
+                        <input type="text" name="cardQuestion" class="form-control" placeholder="VD: 1 dm" required />
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Thẻ 2 (Đáp án)</label>
+                        <input type="text" name="cardAnswer" class="form-control" placeholder="VD: 10 cm" required />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-plus"></i> Thêm
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Danh sách cặp thẻ -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-list"></i> Danh sách cặp thẻ (@Model.Count cặp)</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="5%">#</th>
+                                <th width="40%">Thẻ 1 (Câu hỏi)</th>
+                                <th width="40%">Thẻ 2 (Đáp án)</th>
+                                <th width="15%">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                var gameContent = Model[i];
+                                <tr id="row-@gameContent.GameContentId">
+                                    <td>@(i + 1)</td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" 
+                                               id="question-@gameContent.GameContentId" 
+                                               value="@gameContent.CardQuestion" />
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" 
+                                               id="answer-@gameContent.GameContentId" 
+                                               value="@gameContent.CardAnswer" />
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="updateCard(@gameContent.GameContentId)">
+                                            <i class="fas fa-save"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" onclick="deleteCard(@gameContent.GameContentId)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Chưa có cặp thẻ nào. Hãy thêm cặp thẻ mới ở trên.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateCard(id) {
+        const question = document.getElementById(`question-${id}`).value;
+        const answer = document.getElementById(`answer-${id}`).value;
+
+        if (!question || !answer) {
+            alert('Vui lòng nhập đầy đủ câu hỏi và đáp án!');
+            return;
+        }
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '@Url.Action("UpdateGameContent")';
+
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+        
+        form.innerHTML = `
+            <input type="hidden" name="__RequestVerificationToken" value="${token}" />
+            <input type="hidden" name="gameContentId" value="${id}" />
+            <input type="hidden" name="cardQuestion" value="${question}" />
+            <input type="hidden" name="cardAnswer" value="${answer}" />
+        `;
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function deleteCard(id) {
+        if (!confirm('Bạn có chắc muốn xóa cặp thẻ này?')) return;
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '@Url.Action("DeleteGameContent")';
+
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+        
+        form.innerHTML = `
+            <input type="hidden" name="__RequestVerificationToken" value="${token}" />
+            <input type="hidden" name="gameContentId" value="${id}" />
+        `;
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+@section Scripts {
+    <script>
+        // Auto dismiss alerts after 3 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.alert-dismissible').forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 3000);
+    </script>
+}
+

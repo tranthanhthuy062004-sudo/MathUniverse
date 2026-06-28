@@ -1,0 +1,231 @@
+﻿@model MathUniverse.Models.ViewModels.StudentDetailViewModel
+@{
+    ViewData["Title"] = "Chi tiết học sinh";
+}
+
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="fw-bold">
+            <i class="fas fa-id-card text-primary"></i> Hồ sơ học sinh
+        </h2>
+        <a asp-action="Students" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Profile Card -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    @if (!string.IsNullOrEmpty(Model.Student.AvatarUrl))
+                    {
+                        <img src="@Model.Student.AvatarUrl" class="rounded-circle img-thumbnail" style="width: 120px; height: 120px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+                            <i class="fas fa-user fa-4x text-secondary"></i>
+                        </div>
+                    }
+                </div>
+                <h4 class="fw-bold">@Model.Student.FullName</h4>
+                <p class="text-muted mb-1">Mã số: <code>@Model.Student.StudentCode</code></p>
+                <span class="badge bg-info mb-3">Lớp @Model.Student.Grade</span>
+                
+                <div class="d-grid gap-2 mt-3">
+                    <button class="btn @(Model.Student.IsActive ? "btn-outline-danger" : "btn-outline-success")" 
+                            onclick="toggleStatus(@Model.Student.StudentId)">
+                        <i class="fas @(Model.Student.IsActive ? "fa-lock" : "fa-unlock")"></i> 
+                        @(Model.Student.IsActive ? "Khóa tài khoản" : "Mở khóa tài khoản")
+                    </button>
+                </div>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-envelope text-muted me-2"></i> Email phụ huynh</span>
+                    <span class="text-break">@Model.Student.ParentEmail</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-calendar text-muted me-2"></i> Ngày tham gia</span>
+                    <span>@Model.Student.EnrollmentDate.ToString("dd/MM/yyyy")</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="col-md-8 mb-4">
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card bg-primary text-white h-100">
+                    <div class="card-body text-center">
+                        <h3 class="display-5 fw-bold">@Model.Statistics.TotalPoints</h3>
+                        <small>Điểm tích lũy</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card bg-success text-white h-100">
+                    <div class="card-body text-center">
+                        <h3 class="display-5 fw-bold">@Model.Statistics.TotalLessonsCompleted</h3>
+                        <small>Bài học hoàn thành</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card bg-warning text-dark h-100">
+                    <div class="card-body text-center">
+                        <h3 class="display-5 fw-bold">@Model.Statistics.AverageScore.ToString("F1")</h3>
+                        <small>Điểm trung bình</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Results -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                <h5 class="mb-0" style="color: #ffffff;">
+                    <i class="fas fa-history"></i> Lịch sử làm bài tập 
+                    <small class="ms-2">(@Model.RecentResults.Count kết quả)</small>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>STT</th>
+                                <th>Bài tập</th>
+                                <th>Điểm số</th>
+                                <th>Đúng/Tổng</th>
+                                <th>Lần thử</th>
+                                <th>Thời gian làm</th>
+                                <th>Ngày làm</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.RecentResults.Any())
+                            {
+                                int stt = 1;
+                                foreach (var result in Model.RecentResults)
+                                {
+                                    <tr>
+                                        <td>@stt</td>
+                                        <td>
+                                            <strong>@result.Exercise.Title</strong>
+                                            <br><small class="text-muted">@result.Exercise.Lesson?.Title</small>
+                                        </td>
+                                        <td>
+                                            @if (result.GradingStatus == MathUniverse.Models.GradingStatus.PendingGrading)
+                                            {
+                                                <span class="badge bg-warning text-dark" style="font-size: 0.9rem; padding: 5px 10px;">
+                                                    Đang chờ chấm
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge @(result.IsPassed ? "bg-success" : "bg-danger")" style="font-size: 0.9rem; padding: 5px 10px;">
+                                                    @result.Score.ToString("F1")/10
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="text-primary fw-bold">@result.CorrectAnswers/@result.TotalQuestions</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">Lần @result.AttemptNumber</span>
+                                        </td>
+                                        <td>@result.TimeSpent giây</td>
+                                        <td>@result.CompletedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>
+                                            @if (result.GradingStatus == MathUniverse.Models.GradingStatus.PendingGrading)
+                                            {
+                                                <span class="badge bg-warning text-dark"><i class="fas fa-clock"></i> Chờ chấm</span>
+                                            }
+                                            else if (result.IsPassed)
+                                            {
+                                                <span class="badge bg-success"><i class="fas fa-check-circle"></i> Đạt</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger"><i class="fas fa-times-circle"></i> Chưa đạt</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("ViewExerciseResult", "Admin", new { resultId = result.ResultId })" 
+                                               class="btn btn-sm btn-outline-primary" 
+                                               title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    stt++;
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="9" class="text-center py-3 text-muted">Chưa có kết quả nào.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleStatus(id) {
+            if (confirm('Bạn có chắc chắn muốn thay đổi trạng thái tài khoản này?')) {
+                $.post('/Admin/ToggleStudentStatus', { id: id }, function(result) {
+                    if (result.success) {
+                        // Tìm button toggle
+                        const toggleButton = $(`button[onclick="toggleStatus(${id})"]`);
+                        
+                        // Cập nhật button
+                        if (result.isActive) {
+                            // Tài khoản được mở khóa
+                            toggleButton.removeClass('btn-outline-success').addClass('btn-outline-danger');
+                            toggleButton.html('<i class="fas fa-lock"></i> Khóa tài khoản');
+                            showNotification('Đã mở khóa tài khoản thành công!', 'success');
+                        } else {
+                            // Tài khoản bị khóa
+                            toggleButton.removeClass('btn-outline-danger').addClass('btn-outline-success');
+                            toggleButton.html('<i class="fas fa-unlock"></i> Mở khóa tài khoản');
+                            showNotification('Đã khóa tài khoản thành công!', 'success');
+                        }
+                    } else {
+                        showNotification('Có lỗi xảy ra khi thay đổi trạng thái!', 'error');
+                    }
+                }).fail(function() {
+                    showNotification('Không thể kết nối đến server!', 'error');
+                });
+            }
+        }
+        
+        function showNotification(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+    </script>
+}
+

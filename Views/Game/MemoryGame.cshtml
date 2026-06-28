@@ -1,0 +1,494 @@
+﻿@model List<MathUniverse.Models.MemoryCard>
+@{
+    ViewData["Title"] = "Trò chơi lật thẻ - " + ViewBag.LessonTitle;
+}
+
+<style>
+    /* Space Background */
+    .game-space-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(180deg, #1a0b2e 0%, #0f0520 50%, #1a0b2e 100%);
+        overflow: hidden;
+    }
+
+    .game-star-field {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(2px 2px at 20% 30%, white, transparent),
+            radial-gradient(2px 2px at 60% 70%, white, transparent),
+            radial-gradient(1px 1px at 50% 50%, white, transparent),
+            radial-gradient(1px 1px at 80% 10%, white, transparent),
+            radial-gradient(2px 2px at 90% 60%, white, transparent);
+        background-size: 200% 200%;
+        animation: starTwinkle 8s ease-in-out infinite;
+        opacity: 0.6;
+    }
+
+    /* Game Container */
+    .game-container {
+        padding: 2rem 1rem;
+        min-height: 100vh;
+    }
+
+    .game-header {
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(167, 139, 250, 0.2) 100%);
+        backdrop-filter: blur(15px);
+        border: 2px solid rgba(139, 92, 246, 0.4);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+    }
+
+    .game-title {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f59e0b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    .game-stats {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-item {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 0.75rem 1.5rem;
+        border-radius: 15px;
+        border: 2px solid rgba(139, 92, 246, 0.3);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-weight: 600;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #8b5cf6;
+    }
+
+    /* Memory Grid - 5 columns × 4 rows */
+    .memory-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+        max-width: 900px;
+        margin: 0 auto 2rem;
+    }
+
+    /* Card Item - HIỂN THỊ NGỬA */
+    .card-item {
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(167, 139, 250, 0.15));
+        backdrop-filter: blur(10px);
+        border: 3px solid rgba(139, 92, 246, 0.4);
+        border-radius: 15px;
+        height: 120px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: white; /* Hiển thị text luôn */
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+        user-select: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Bỏ icon question mark vì giờ hiển thị text luôn */
+    .card-item::before {
+        content: '';
+        display: none;
+    }
+
+    .card-item:hover:not(.selected):not(.matched) {
+        transform: translateY(-5px) scale(1.02);
+        border-color: rgba(245, 158, 11, 0.6);
+        box-shadow: 0 12px 30px rgba(245, 158, 11, 0.3);
+    }
+
+    /* Selected State - Khi click chọn */
+    .card-item.selected {
+        background: linear-gradient(135deg, #ec4899, #f59e0b);
+        border-color: #fff;
+        color: white;
+        transform: scale(1.05);
+        box-shadow: 0 0 30px rgba(236, 72, 153, 0.6);
+    }
+
+    /* Matched State - Khi ghép đúng */
+    .card-item.matched {
+        background: linear-gradient(135deg, #10b981, #34d399);
+        border-color: #10b981;
+        color: white;
+        transform: scale(0);
+        opacity: 0;
+        pointer-events: none;
+        animation: matchAnimation 0.6s ease-out forwards;
+    }
+
+    @@keyframes matchAnimation {
+        0% { 
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.2) rotate(5deg);
+            opacity: 0.8;
+        }
+        100% { 
+            transform: scale(0) rotate(0deg);
+            opacity: 0;
+        }
+    }
+
+    .card-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0.5rem;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Action Buttons */
+    .game-actions {
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .btn-game {
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        border: none;
+        color: white;
+        font-weight: 700;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-game:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(139, 92, 246, 0.6);
+        color: white;
+    }
+
+    .btn-game-secondary {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    }
+
+    /* Win Modal */
+    .win-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.95), rgba(236, 72, 153, 0.95));
+        backdrop-filter: blur(20px);
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 30px;
+        padding: 3rem;
+        text-align: center;
+        z-index: 1000;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        min-width: 400px;
+    }
+
+    .win-modal.show {
+        display: block;
+        animation: modalPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    @@keyframes modalPop {
+        0% { transform: translate(-50%, -50%) scale(0); }
+        100% { transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .win-modal h2 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+    }
+
+    .win-modal p {
+        color: white;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 999;
+    }
+
+    .modal-overlay.show {
+        display: block;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .memory-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        .card-item {
+            height: 90px;
+            font-size: 1rem;
+        }
+
+        .card-item::before {
+            font-size: 1.8rem;
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+        }
+
+        .win-modal {
+            min-width: 90%;
+            padding: 2rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .memory-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+</style>
+
+<!-- Space Background -->
+<div class="game-space-background">
+    <div class="game-star-field"></div>
+</div>
+
+<!-- Game Container -->
+<div class="game-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="game-header text-center">
+            <h1 class="game-title">
+                <i class="fas fa-puzzle-piece"></i> Ghép thẻ tương ứng
+            </h1>
+            <p class="text-white mb-3">
+                <strong>@ViewBag.LessonTitle</strong><br>
+                <small>Chọn 2 thẻ có giá trị bằng nhau để làm chúng biến mất!</small>
+            </p>
+            
+            <div class="game-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Số lượt</div>
+                    <div class="stat-value" id="moveCounter">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Thời gian</div>
+                    <div class="stat-value" id="timeCounter">00:00</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Tìm được</div>
+                    <div class="stat-value">
+                        <span id="foundPairs">0</span>/<span id="totalPairs">10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory Grid -->
+        <div class="memory-grid" id="memoryGrid">
+            @foreach (var card in Model)
+            {
+                <div class="card-item" 
+                     data-id="@card.Id" 
+                     data-match="@card.MatchId"
+                     data-type="@card.Type"
+                     onclick="flipCard(this)">
+                    <div class="card-content">
+                        <span>@card.Content</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Actions -->
+        <div class="game-actions">
+            <a href="@Url.Action("MemoryGame", "Game", new { lessonId = ViewBag.LessonId })" class="btn btn-game me-3">
+                <i class="fas fa-redo"></i> Làm mới trò chơi
+            </a>
+            <a href="@Url.Action("LessonDetail", "Student", new { id = ViewBag.LessonId })" class="btn btn-game btn-game-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại bài học
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Win Modal -->
+<div class="modal-overlay" id="modalOverlay"></div>
+<div class="win-modal" id="winModal">
+    <h2>🎉 CHÚC MỪNG! 🎉</h2>
+    <p>Bạn đã hoàn thành trò chơi!</p>
+    <p>
+        <strong>Số lượt:</strong> <span id="finalMoves">0</span><br>
+        <strong>Thời gian:</strong> <span id="finalTime">00:00</span><br>
+        <strong>Điểm thưởng:</strong> <span id="pointsEarned">0</span> điểm
+    </p>
+    <a href="@Url.Action("MemoryGame", "Game", new { lessonId = ViewBag.LessonId })" class="btn btn-game me-2">
+        <i class="fas fa-redo"></i> Chơi lại
+    </a>
+    <a href="@Url.Action("LessonDetail", "Student", new { id = ViewBag.LessonId })" class="btn btn-game btn-game-secondary">
+        <i class="fas fa-arrow-left"></i> Quay lại
+    </a>
+</div>
+
+@section Scripts {
+<script>
+    let firstCard = null;
+    let lockBoard = false;
+    let moves = 0;
+    let foundPairs = 0;
+    let totalPairs = @(Model.Count / 2);
+    let startTime = null;
+    let timerInterval = null;
+
+    document.getElementById('totalPairs').textContent = totalPairs;
+
+    // Start timer
+    function startTimer() {
+        if (!startTime) {
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+    }
+
+    function updateTimer() {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+        const seconds = (elapsed % 60).toString().padStart(2, '0');
+        document.getElementById('timeCounter').textContent = `${minutes}:${seconds}`;
+    }
+
+    function flipCard(element) {
+        if (lockBoard) return;
+        if (element === firstCard) return;
+        if (element.classList.contains('matched')) return;
+
+        startTimer();
+
+        element.classList.add('selected');
+
+        if (!firstCard) {
+            firstCard = element;
+            return;
+        }
+
+        checkForMatch(firstCard, element);
+    }
+
+    function checkForMatch(card1, card2) {
+        moves++;
+        document.getElementById('moveCounter').textContent = moves;
+
+        let matchId1 = card1.getAttribute('data-match');
+        let matchId2 = card2.getAttribute('data-match');
+
+        if (matchId1 === matchId2) {
+            disableCards(card1, card2);
+        } else {
+            unflipCards(card1, card2);
+        }
+    }
+
+    function disableCards(card1, card2) {
+        lockBoard = true;
+        
+        setTimeout(() => {
+            card1.classList.add('matched');
+            card2.classList.add('matched');
+            
+            foundPairs++;
+            document.getElementById('foundPairs').textContent = foundPairs;
+            
+            resetBoard();
+            checkWin();
+        }, 600);
+    }
+
+    function unflipCards(card1, card2) {
+        lockBoard = true;
+        
+        setTimeout(() => {
+            card1.classList.remove('selected');
+            card2.classList.remove('selected');
+            resetBoard();
+        }, 1000);
+    }
+
+    function resetBoard() {
+        [firstCard, lockBoard] = [null, false];
+    }
+
+    function checkWin() {
+        if (foundPairs === totalPairs) {
+            clearInterval(timerInterval);
+            
+            const timeText = document.getElementById('timeCounter').textContent;
+            const pointsEarned = Math.max(10, 50 - moves);
+            
+            document.getElementById('finalMoves').textContent = moves;
+            document.getElementById('finalTime').textContent = timeText;
+            document.getElementById('pointsEarned').textContent = pointsEarned;
+            
+            // Save score to server
+            fetch('@Url.Action("SaveGameScore", "Game")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: JSON.stringify({
+                    lessonId: @ViewBag.LessonId,
+                    timeSpent: Math.floor((Date.now() - startTime) / 1000),
+                    moves: moves
+                })
+            });
+            
+            setTimeout(() => {
+                document.getElementById('modalOverlay').classList.add('show');
+                document.getElementById('winModal').classList.add('show');
+            }, 800);
+        }
+    }
+</script>
+}
+

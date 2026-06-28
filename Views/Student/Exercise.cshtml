@@ -1,0 +1,705 @@
+﻿@model MathUniverse.Models.ViewModels.ExerciseDetailViewModel
+@{
+    ViewData["Title"] = Model.Exercise.Title;
+}
+
+<style>
+    /* Space Background */
+    .exercise-space-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background: linear-gradient(180deg, #e0e7ff 0%, #c7d2fe 35%, #a5b4fc 70%, #ddd6fe 100%);
+        opacity: 0.6;
+        overflow: hidden;
+    }
+
+    .exercise-star-field {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(2px 2px at 20% 30%, white, transparent),
+            radial-gradient(2px 2px at 60% 70%, white, transparent),
+            radial-gradient(1px 1px at 50% 50%, white, transparent);
+        background-size: 200% 200%;
+        animation: starTwinkle 8s ease-in-out infinite;
+        opacity: 0.5;
+    }
+
+    /* Exercise Container */
+    .exercise-container {
+        padding: 2rem 0;
+        min-height: 100vh;
+    }
+
+    .exercise-header {
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(167, 139, 250, 0.2) 100%);
+        backdrop-filter: blur(15px);
+        border: 2px solid rgba(139, 92, 246, 0.3);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
+    }
+
+    .exercise-title {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    .exercise-info {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+
+    .info-badge {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        border: 2px solid rgba(139, 92, 246, 0.2);
+        font-weight: 600;
+        color: #4b5563;
+    }
+
+    .info-badge i {
+        color: #8b5cf6;
+        margin-right: 0.3rem;
+    }
+
+    /* Question Card */
+    .question-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(15px);
+        border: 2px solid rgba(139, 92, 246, 0.2);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
+        transition: all 0.3s ease;
+    }
+
+    .question-card.active {
+        border-color: rgba(139, 92, 246, 0.5);
+        box-shadow: 0 15px 40px rgba(139, 92, 246, 0.25);
+    }
+
+    .question-number {
+        display: inline-block;
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 40px;
+        font-weight: 800;
+        margin-right: 0.75rem;
+        box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+    }
+
+    .question-text {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Answer Options */
+    .answer-options {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .answer-option {
+        position: relative;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(167, 139, 250, 0.05));
+        border: 3px solid rgba(139, 92, 246, 0.2);
+        border-radius: 15px;
+        padding: 1.25rem 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .answer-option:hover {
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(167, 139, 250, 0.1));
+        border-color: rgba(139, 92, 246, 0.4);
+        transform: translateX(5px);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+    }
+
+    .answer-option input[type="radio"] {
+        width: 24px;
+        height: 24px;
+        margin-right: 1rem;
+        cursor: pointer;
+        accent-color: #8b5cf6;
+    }
+
+    .answer-option.selected {
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(167, 139, 250, 0.15));
+        border-color: #8b5cf6;
+        box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+    }
+
+    .answer-option.correct {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(52, 211, 153, 0.15));
+        border-color: #10b981;
+        color: #059669;
+    }
+
+    .answer-option.incorrect {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(248, 113, 113, 0.15));
+        border-color: #ef4444;
+        color: #dc2626;
+    }
+
+    .answer-label {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        color: white;
+        border-radius: 8px;
+        text-align: center;
+        line-height: 32px;
+        font-weight: 800;
+        margin-right: 1rem;
+    }
+
+    /* Essay Answer Section */
+    .essay-answer-section {
+        padding: 1.5rem;
+        background: rgba(243, 244, 246, 0.5);
+        border-radius: 15px;
+        border: 2px dashed rgba(139, 92, 246, 0.3);
+    }
+
+    .essay-text {
+        border: 2px solid rgba(139, 92, 246, 0.2);
+        border-radius: 10px;
+        padding: 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .essay-text:focus {
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        outline: none;
+    }
+
+    .essay-image-input {
+        border: 2px solid rgba(139, 92, 246, 0.2);
+        border-radius: 10px;
+    }
+
+    /* Navigation Buttons */
+    .exercise-navigation {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-exercise {
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        border: none;
+        color: white;
+        font-weight: 700;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .btn-exercise:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(139, 92, 246, 0.6);
+        color: white;
+    }
+
+    .btn-exercise-secondary {
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    }
+
+    .btn-exercise:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(139, 92, 246, 0.2);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(139, 92, 246, 0.1);
+    }
+
+    .progress-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        font-weight: 700;
+        color: #4b5563;
+    }
+
+    .progress {
+        height: 25px;
+        border-radius: 15px;
+        background: rgba(139, 92, 246, 0.1);
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        transition: width 0.5s ease;
+        font-weight: 700;
+    }
+
+    /* Result Modal */
+    .result-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
+        border: 3px solid rgba(139, 92, 246, 0.3);
+        border-radius: 30px;
+        padding: 3rem;
+        text-align: center;
+        z-index: 1000;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        min-width: 450px;
+        max-width: 90%;
+    }
+
+    .result-modal.show {
+        display: block;
+        animation: modalPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    @@keyframes modalPop {
+        0% { transform: translate(-50%, -50%) scale(0); }
+        100% { transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .result-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+    }
+
+    .result-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+    }
+
+    .result-score {
+        font-size: 3rem;
+        font-weight: 900;
+        color: #8b5cf6;
+        margin: 1rem 0;
+    }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 999;
+    }
+
+    .modal-overlay.show {
+        display: block;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .exercise-title {
+            font-size: 1.5rem;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+        }
+
+        .answer-option {
+            font-size: 1rem;
+            padding: 1rem;
+        }
+
+        .result-modal {
+            min-width: 90%;
+            padding: 2rem;
+        }
+    }
+</style>
+
+<!-- Space Background -->
+<div class="exercise-space-background">
+    <div class="exercise-star-field"></div>
+</div>
+
+<!-- Exercise Container -->
+<div class="exercise-container">
+    <div class="container">
+        <!-- Header -->
+        <div class="exercise-header">
+            <h1 class="exercise-title">
+                <i class="fas fa-pencil-alt"></i> @Model.Exercise.Title
+            </h1>
+            @if (!string.IsNullOrEmpty(Model.Exercise.Description))
+            {
+                <p class="text-dark mb-0">@Model.Exercise.Description</p>
+            }
+            <div class="exercise-info">
+                <div class="info-badge">
+                    <i class="fas fa-list"></i>
+                    @Model.Questions.Count câu hỏi
+                </div>
+                <div class="info-badge">
+                    <i class="fas fa-star"></i>
+                    Điểm đạt: @Model.Exercise.PassingScore
+                </div>
+                <div class="info-badge">
+                    <i class="fas fa-redo"></i>
+                    Còn @Model.AttemptsRemaining/@Model.Exercise.MaxAttempts lần làm
+                </div>
+                @if (Model.BestScore.HasValue)
+                {
+                    <div class="info-badge">
+                        <i class="fas fa-trophy"></i>
+                        Điểm cao nhất: @Model.BestScore.Value.ToString("F1")
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-info">
+                <span>Tiến độ</span>
+                <span><span id="answeredCount">0</span>/@Model.Questions.Count câu</span>
+            </div>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" id="progressBar" style="width: 0%">0%</div>
+            </div>
+        </div>
+
+        <!-- Questions Form -->
+        <form id="exerciseForm">
+            @for (int i = 0; i < Model.Questions.Count; i++)
+            {
+                var question = Model.Questions[i];
+                <div class="question-card" data-question-id="@question.QuestionId" data-question-type="@question.Type">
+                    <div class="d-flex align-items-start mb-3">
+                        <span class="question-number">@(i + 1)</span>
+                        <div class="question-text">
+                            @question.QuestionText
+                            @if (question.Type == QuestionType.Essay)
+                            {
+                                <span class="badge bg-info ms-2">Tự luận</span>
+                            }
+                            @if (!string.IsNullOrEmpty(question.ImageUrl))
+                            {
+                                <div class="mt-3">
+                                    <img src="@question.ImageUrl" alt="Question Image" class="img-fluid rounded" style="max-height: 300px;">
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    
+                    @if (question.Type == QuestionType.MultipleChoice)
+                    {
+                        <div class="answer-options">
+                            @foreach (var answer in question.Answers.OrderBy((Func<Answer, int>)(a => a.OrderIndex)))
+                            {
+                                var optionLabel = ((char)('A' + answer.OrderIndex)).ToString();
+                                <label class="answer-option" data-answer-id="@answer.AnswerId">
+                                    <input type="radio" 
+                                           name="question_@question.QuestionId" 
+                                           value="@answer.AnswerId"
+                                           onchange="updateProgress()">
+                                    <span class="answer-label">@optionLabel</span>
+                                    <span>@answer.AnswerText</span>
+                                    @if (!string.IsNullOrEmpty(answer.ImageUrl))
+                                    {
+                                        <img src="@answer.ImageUrl" alt="Answer Image" class="ms-3 rounded" style="max-height: 60px;">
+                                    }
+                                </label>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Essay Question -->
+                        <div class="essay-answer-section">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Câu trả lời của bạn:</label>
+                                <textarea class="form-control essay-text" 
+                                          name="essay_@question.QuestionId" 
+                                          rows="5" 
+                                          placeholder="Nhập câu trả lời của bạn vào đây..."
+                                          onchange="updateProgress()"
+                                          oninput="updateProgress()"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Hoặc upload/chụp ảnh bài làm:</label>
+                                <div class="d-flex gap-2">
+                                    <input type="file" 
+                                           id="essayImage_@question.QuestionId" 
+                                           class="form-control essay-image-input" 
+                                           accept="image/*"
+                                           capture="environment"
+                                           onchange="previewEssayImage(@question.QuestionId)">
+                                    <button type="button" class="btn btn-secondary" onclick="clearEssayImage(@question.QuestionId)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">Bạn có thể chụp ảnh trực tiếp hoặc chọn ảnh từ thiết bị</small>
+                                <div id="essayPreview_@question.QuestionId" class="mt-3" style="display: none;">
+                                    <img id="essayPreviewImg_@question.QuestionId" src="" class="img-fluid rounded" style="max-height: 300px; border: 2px solid #ddd;">
+                                </div>
+                                <input type="hidden" id="essayImageUrl_@question.QuestionId" name="essay_image_@question.QuestionId" value="">
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </form>
+
+        <!-- Navigation -->
+        <div class="exercise-navigation">
+            <a href="@Url.Action("LessonDetail", "Student", new { id = Model.Exercise.LessonId })" class="btn btn-exercise btn-exercise-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại bài học
+            </a>
+            <button type="button" class="btn btn-exercise" onclick="submitExercise()" id="submitBtn" disabled>
+                <i class="fas fa-check"></i> Nộp bài
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Result Modal -->
+<div class="modal-overlay" id="modalOverlay"></div>
+<div class="result-modal" id="resultModal">
+    <div class="result-icon" id="resultIcon">🎉</div>
+    <h2 class="result-title" id="resultTitle">Chúc mừng!</h2>
+    <div class="result-score" id="resultScore">0/10</div>
+    <p id="resultMessage" class="text-dark mb-4"></p>
+    <div class="d-flex gap-2 justify-content-center">
+        @if (Model.AttemptsRemaining > 1)
+        {
+            <a href="@Url.Action("Exercise", "Student", new { id = Model.Exercise.ExerciseId })" class="btn btn-exercise">
+                <i class="fas fa-redo"></i> Làm lại
+            </a>
+        }
+        <a href="@Url.Action("LessonDetail", "Student", new { id = Model.Exercise.LessonId })" class="btn btn-exercise btn-exercise-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    let totalQuestions = @Model.Questions.Count;
+    let answeredCount = 0;
+
+    function updateProgress() {
+        // Count multiple choice answers
+        const multipleChoiceAnswers = document.querySelectorAll('input[type="radio"]:checked').length;
+        
+        // Count essay answers (text or image)
+        let essayAnswers = 0;
+        document.querySelectorAll('.essay-text').forEach(textarea => {
+            const questionId = textarea.name.replace('essay_', '');
+            const imageUrl = document.getElementById(`essayImageUrl_${questionId}`)?.value || '';
+            if (textarea.value.trim() || imageUrl) {
+                essayAnswers++;
+            }
+        });
+        
+        answeredCount = multipleChoiceAnswers + essayAnswers;
+        const percentage = Math.round((answeredCount / totalQuestions) * 100);
+        
+        document.getElementById('answeredCount').textContent = answeredCount;
+        document.getElementById('progressBar').style.width = percentage + '%';
+        document.getElementById('progressBar').textContent = percentage + '%';
+        
+        // Enable submit button if all questions are answered
+        document.getElementById('submitBtn').disabled = answeredCount < totalQuestions;
+        
+        // Update selected state
+        document.querySelectorAll('.answer-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        document.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
+            radio.closest('.answer-option').classList.add('selected');
+        });
+    }
+
+    async function previewEssayImage(questionId) {
+        const fileInput = document.getElementById(`essayImage_${questionId}`);
+        const preview = document.getElementById(`essayPreview_${questionId}`);
+        const previewImg = document.getElementById(`essayPreviewImg_${questionId}`);
+        const urlInput = document.getElementById(`essayImageUrl_${questionId}`);
+        
+        if (fileInput.files && fileInput.files[0]) {
+            const file = fileInput.files[0];
+            
+            // Show preview immediately
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            
+            // Upload to server
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('@Url.Action("UploadImage", "Student")', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    urlInput.value = result.imageUrl;
+                    updateProgress();
+                } else {
+                    alert('Lỗi khi tải ảnh lên. Vui lòng thử lại.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi tải ảnh lên.');
+            }
+        }
+    }
+
+    function clearEssayImage(questionId) {
+        document.getElementById(`essayImage_${questionId}`).value = '';
+        document.getElementById(`essayPreview_${questionId}`).style.display = 'none';
+        document.getElementById(`essayImageUrl_${questionId}`).value = '';
+        updateProgress();
+    }
+
+    async function submitExercise() {
+        const form = document.getElementById('exerciseForm');
+        const formData = new FormData(form);
+        const answers = {};
+        const essayAnswers = [];
+
+        // Collect multiple choice answers
+        formData.forEach((value, key) => {
+            if (key.startsWith('question_')) {
+                const questionId = key.replace('question_', '');
+                answers[questionId] = parseInt(value);
+            }
+        });
+        
+        // Collect essay answers
+        document.querySelectorAll('.essay-text').forEach(textarea => {
+            const questionId = parseInt(textarea.name.replace('essay_', ''));
+            const imageUrl = document.getElementById(`essayImageUrl_${questionId}`)?.value || '';
+            essayAnswers.push({
+                questionId: questionId,
+                answerText: textarea.value.trim(),
+                imageUrl: imageUrl
+            });
+        });
+
+        const submitData = {
+            exerciseId: @Model.Exercise.ExerciseId,
+            answers: answers,
+            essayAnswers: essayAnswers,
+            timeSpent: 0 // You can implement timer if needed
+        };
+
+        try {
+            const response = await fetch('@Url.Action("SubmitExercise", "Student")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                },
+                body: JSON.stringify(submitData)
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                showResult(result.result);
+            } else {
+                alert('Có lỗi xảy ra: ' + (result.message || 'Vui lòng thử lại'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
+        }
+    }
+
+    function showResult(data) {
+        const modal = document.getElementById('resultModal');
+        const overlay = document.getElementById('modalOverlay');
+        const icon = document.getElementById('resultIcon');
+        const title = document.getElementById('resultTitle');
+        const score = document.getElementById('resultScore');
+        const message = document.getElementById('resultMessage');
+
+        if (data.isPassed) {
+            icon.textContent = '🎉';
+            title.textContent = 'Chúc mừng!';
+            message.textContent = `Bạn đã hoàn thành bài tập với ${data.correctAnswers}/${data.totalQuestions} câu đúng!`;
+        } else {
+            icon.textContent = '😊';
+            title.textContent = 'Cố gắng thêm nhé!';
+            message.textContent = `Bạn trả lời đúng ${data.correctAnswers}/${data.totalQuestions} câu. ${data.message}`;
+        }
+
+        score.textContent = data.score.toFixed(1) + '/10';
+
+        overlay.classList.add('show');
+        modal.classList.add('show');
+    }
+
+    // Add radio click handlers
+    document.querySelectorAll('.answer-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = true;
+                updateProgress();
+            }
+        });
+    });
+</script>
+}
