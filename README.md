@@ -19,7 +19,12 @@ Nền tảng học Toán trực tuyến dành cho học sinh Tiểu học (Lớp
 - 👨‍🏫 **Dashboard quản trị** cho giáo viên
 
 ---
+## Business Analyst Deliverables
 
+This repository includes BA-related documentation and analysis artifacts for the MathUniverse academic web project.
+
+- [Academic Project Report](./MathUniverse_Project_Report.pdf)  
+  Includes project overview, functional requirements, non-functional requirements, business rules, user requirements, use case specifications, interface flow, test cases, and system evaluation.
 ## ✨ Tính Năng Chính
 
 ### Dành cho Học Sinh:
